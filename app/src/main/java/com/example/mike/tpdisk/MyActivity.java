@@ -11,8 +11,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +34,8 @@ public class MyActivity extends FragmentActivity {
     public static final String CLIENT_SECRET = "a559578417c34549a9a929c355e00e08";
     public static int counter = 0;
     public static final String ACCOUNT_TYPE = "com.yandex";
+    public static final String TOKEN_NAME = "token";
+    public static final String EXPIRSE_NAME = "expires";
     public static final String AUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id="+CLIENT_ID;
     private static final String ACTION_ADD_ACCOUNT = "com.yandex.intent.ADD_ACCOUNT";
     private static final String KEY_CLIENT_SECRET = "clientSecret";
@@ -43,59 +48,52 @@ public class MyActivity extends FragmentActivity {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-        if(counter == 0){
-            getToken();
+        String authToken = getToken();
+        // TODO: Fix expires
+        Log.d(TAG, authToken + " " + Integer.toString(getExpires()));
+        if (authToken == null) {
+            String data = null;
+            Intent intent = getIntent();
+            if (intent != null) {
+                Uri uri = intent.getData();
+                if (uri != null) {
+                    data = uri.getFragment();
+                }
+            }
+            if (data == null) {
+                new AuthDialogFragment().show(getSupportFragmentManager(), "auth");
+                //getToken();
+            } else {
+                String[] parts = data.split("&");
+                String token = parts[0].split("=")[1];
+                Integer expires = Integer.parseInt(parts[2].split("=")[1]);
+                saveData(token, expires);
+                Credintals.setToken(token);
+                Log.d(TAG, data);
+            }
         }
         else {
-            Log.d(TAG, getIntent().getData().getFragment());
+            Credintals.setToken(authToken);
         }
-        counter++;
 
+        Log.d(TAG, Credintals.getToken() == null ? "NO TOKEN" : Credintals.getToken());
 
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "RequestCode: " + Integer.toString(requestCode) + "ResultCode: " + Integer.toString(requestCode));
-        if (requestCode == GET_ACCOUNT_CREDS_INTENT) {
-            if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                String name = bundle.getString(AccountManager.KEY_ACCOUNT_NAME);
-                String type = bundle.getString(AccountManager.KEY_ACCOUNT_TYPE);
-                Log.d(TAG, "GET_ACCOUNT_CREDS_INTENT: name="+name+" type="+type);
-                //Account account = new Account(name, type);
-                //getAuthToken(account);
-            }
-        }
+    private int getExpires(){
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        return settings.getInt(EXPIRSE_NAME, -1);
     }
-    private void getToken(){
-        AccountManager accountManager = AccountManager.get(getApplicationContext());
-        Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
-        Log.d(TAG, "accounts: " + (accounts != null ? accounts.length : null));
-
-        if (accounts != null && accounts.length > 0) {
-            // get the first account, for example (you must show the list and allow user to choose)
-            Account account = accounts[0];
-            Log.d(TAG, "account: "+account);
-            getAuthToken(account);
-            return;
-        }
-
-        Log.d(TAG, "No such accounts: "+ACCOUNT_TYPE);
-        for (AuthenticatorDescription authDesc : accountManager.getAuthenticatorTypes()) {
-            if (ACCOUNT_TYPE.equals(authDesc.type)) {
-                Log.d(TAG, "Starting "+ACTION_ADD_ACCOUNT);
-                Intent intent = new Intent(ACTION_ADD_ACCOUNT);
-                startActivityForResult(intent, GET_ACCOUNT_CREDS_INTENT);
-                return;
-            }
-        }
-
-        // no account manager for com.yandex
-
-        new AuthDialogFragment().show(getSupportFragmentManager(), "auth");
-
+    private String getToken(){
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        return settings.getString(TOKEN_NAME, null);
     }
-
+    private void saveData(String token, Integer expires){
+        SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = setting.edit();
+        editor.putString(TOKEN_NAME, token);
+        editor.putInt(EXPIRSE_NAME, (int) System.currentTimeMillis() / 1000 + expires);
+        editor.apply();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -144,45 +142,4 @@ public class MyActivity extends FragmentActivity {
         }
     };
 
-    private class GetAuthTokenCallback implements AccountManagerCallback<Bundle> {
-        public void run(AccountManagerFuture<Bundle> result) {
-            try {
-                Bundle bundle = result.getResult();
-                Log.d(TAG, "bundle: "+bundle);
-
-                String message = (String) bundle.get(AccountManager.KEY_ERROR_MESSAGE);
-                if (message != null) {
-                    Toast.makeText(MyActivity.this, message, Toast.LENGTH_LONG).show();
-                }
-
-                Intent intent = (Intent) bundle.get(AccountManager.KEY_INTENT);
-                Log.d(TAG, "intent: "+intent);
-                if (intent != null) {
-                    // User input required
-                    startActivityForResult(intent, GET_ACCOUNT_CREDS_INTENT);
-                } else {
-                    String token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-                    Log.d(TAG, "GetAuthTokenCallback: token="+token);
-                    //saveToken(token);
-                    //startFragment();
-                }
-            } catch (OperationCanceledException ex) {
-                Log.d(TAG, "GetAuthTokenCallback", ex);
-                Toast.makeText(MyActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
-            } catch (AuthenticatorException ex) {
-                Log.d(TAG, "GetAuthTokenCallback", ex);
-                Toast.makeText(MyActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
-            } catch (IOException ex) {
-                Log.d(TAG, "GetAuthTokenCallback", ex);
-                Toast.makeText(MyActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    private void getAuthToken(Account account) {
-        AccountManager systemAccountManager = AccountManager.get(getApplicationContext());
-        Bundle options = new Bundle();
-        options.putString(KEY_CLIENT_SECRET, CLIENT_SECRET);
-        systemAccountManager.getAuthToken(account, CLIENT_ID, options, this, new GetAuthTokenCallback(), null);
-    }
 }
