@@ -9,11 +9,15 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -21,12 +25,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
 import android.widget.Toast;
 
 import java.io.IOException;
 
 
-public class MyActivity extends FragmentActivity {
+public class MyActivity extends FragmentActivity /*implements LoaderManager.LoaderCallbacks<String> */{
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
 
     private String TAG = "MainActivity";
@@ -39,10 +44,10 @@ public class MyActivity extends FragmentActivity {
     public static final String AUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id="+CLIENT_ID;
     private static final String ACTION_ADD_ACCOUNT = "com.yandex.intent.ADD_ACCOUNT";
     private static final String KEY_CLIENT_SECRET = "clientSecret";
-
+    public static final String URL_BUNDLE = "url";
     public static String USERNAME = "example.username";
     public static String TOKEN = "example.token";
-
+    public static UrlLoader urlLoader = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -75,9 +80,38 @@ public class MyActivity extends FragmentActivity {
         else {
             Credintals.setToken(authToken);
         }
+        /*Loader<String> loader= getLoaderManager().getLoader(1);
+        if (loader != null){
+            Log.d(TAG, "Not null");
+            if(loader.isStarted()) {
+                Log.d(TAG, "Started");
+            }
+        }*/
+        if (urlLoader != null){
+            urlLoader.activity = this;
+            if (!urlLoader.getStatus().equals(AsyncTask.Status.FINISHED)){
+                urlLoader.showDialog();
+            }
+        }
 
         Log.d(TAG, Credintals.getToken() == null ? "NO TOKEN" : Credintals.getToken());
 
+    }
+
+    public void downloadAsync(View view){
+        /*Bundle bundle = new Bundle();
+        bundle.putString(URL_BUNDLE, "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");
+        getLoaderManager().initLoader(1, bundle, this);
+        Loader<String> loader;
+        loader = getLoaderManager().getLoader(1);
+        loader.forceLoad();*/
+        urlLoader = new UrlLoader(this);
+        urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");
+    }
+    @Override
+    protected void onDestroy(){
+        urlLoader.hideDialog();
+        super.onDestroy();
     }
     private int getExpires(){
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -112,6 +146,27 @@ public class MyActivity extends FragmentActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    /*@Override
+    public Loader<String> onCreateLoader(int i, Bundle bundle) {
+        Loader<String> loader = null;
+        loader = new UrlLoader(this, bundle);
+        Log.d(TAG, "onCreateLoader");
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String> stringLoader, String s) {
+        Log.d(TAG, "onLoadFinished: " + s);
+        progressDialog.dismiss();
+        getLoaderManager().destroyLoader(stringLoader.getId());
+    }
+
+    @Override
+    public void onLoaderReset(Loader<String> stringLoader) {
+        Log.d(TAG, "onLoaderReset");
+    }*/
+
     public static class AuthDialogFragment extends DialogFragment {
 
         public AuthDialogFragment () {
