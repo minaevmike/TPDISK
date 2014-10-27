@@ -50,6 +50,7 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
     public static String TOKEN = "example.token";
     public static UrlLoader urlLoader = null;
     private DownloadStateReceiver mDownloadStateReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -61,7 +62,7 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         if (authToken == null) {
             String data = null;
             Intent intent = getIntent();
-            Log.d(TAG,"THIS IS IT" + intent.getData().toString());
+            Log.d(TAG, "THIS IS IT" + intent.getData().toString());
             if (intent != null) {
                 Uri uri = intent.getData();
                 if (uri != null) {
@@ -118,17 +119,17 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         loader = getLoaderManager().getLoader(1);
         loader.forceLoad();*/
 
-        Intent mServiceIntent = new Intent(this, UrlService.class);
+        /*Intent mServiceIntent = new Intent(this, UrlService.class);
         mServiceIntent.putExtra(UrlService.PARAM_URL, "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");
         mServiceIntent.setAction(UrlService.ACTION_GET_URI);
-        startService(mServiceIntent);
+        startService(mServiceIntent);*/
 
         urlLoader = new UrlLoader(this);
         urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");
     }
     @Override
     protected void onDestroy(){
-        urlLoader.hideDialog();
+        //urlLoader.hideDialog();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mDownloadStateReceiver);
         super.onDestroy();
     }
@@ -168,9 +169,6 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
 
     @Override
     public void setResult(String result) {
-        Log.d(TAG, result);
-        Log.d(TAG, result);
-        Log.d(TAG, result);
         Log.d(TAG, result);
     }
 

@@ -12,6 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -36,6 +37,7 @@ public class UrlService extends IntentService {
         intent.putExtra(PARAM_URL, url);
         context.startService(intent);
     }
+
     public UrlService() {
         super("UrlService");
     }
@@ -57,7 +59,15 @@ public class UrlService extends IntentService {
         Log.d(TAG, hashCode() + " loadInBackground start");
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Authorization", "OAuth " + Credintals.getToken());
-        String answer = Connector.getByUrl(url, headers);
+        Connector connector = new Connector();
+        connector.setHeader(headers);
+        connector.setUrl(url);
+        String answer = connector.getByUrl();
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         SendResult(answer);
     }
     private void SendResult(String result) {

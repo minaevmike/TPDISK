@@ -11,6 +11,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +57,10 @@ public class UrlLoader extends AsyncTask<String, Void, String>{
         connector.setHeader(headers);
         connector.setUrl(url);
         String answer = connector.getByUrl();
-        Log.d(TAG, answer);
+        if (answer == null){
+            Log.d(TAG, url);
+        }
+        //Log.d(TAG, answer);
         return answer;
     }
     @Override
