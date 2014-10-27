@@ -16,18 +16,37 @@ import java.util.Map;
  * Created by Mike on 29.09.2014.
  */
 public class Connector {
-    public static String getByUrl(String url){
-        Map<String, String> h = new HashMap<String, String>();
-        return getByUrl(url, h);
+    public void setMethod(String method) {
+        this.method = method;
     }
 
-    public static String getByUrl(String surl, Map<String, String> headers){
+    private String method = null;
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    private String url = null;
+
+    public void setHeader(Map<String, String> header) {
+        this.header = header;
+    }
+
+    private Map<String, String> header = null;
+
+    public  String getByUrl(){
         String answer = null;
+        if (header == null){
+            header = new HashMap<String, String>();
+        }
+        if (method == null){
+            method = "GET";
+        }
         try {
-            URL url = new URL(surl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            for(Map.Entry<String, String> entry:headers.entrySet()) {
+            URL u = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) u.openConnection();
+            connection.setRequestMethod(method);
+            for(Map.Entry<String, String> entry:header.entrySet()) {
                 connection.setRequestProperty(entry.getKey(), entry.getValue());
             }
             connection.connect();
@@ -44,7 +63,7 @@ public class Connector {
         return answer;
     }
 
-    private static String handleInputStream(InputStream in) throws IOException {
+    private  String handleInputStream(InputStream in) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String result = "", line = "";
         while ((line = reader.readLine()) != null) {
