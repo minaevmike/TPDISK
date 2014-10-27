@@ -13,6 +13,7 @@ import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,10 +30,9 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import java.io.IOException;
 
 
-public class MyActivity extends FragmentActivity /*implements LoaderManager.LoaderCallbacks<String> */{
+public class MyActivity extends FragmentActivity implements DownloadStateReceiver.resultGetter /*implements LoaderManager.LoaderCallbacks<String> */{
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
 
     private String TAG = "MainActivity";
@@ -48,6 +49,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
     public static String USERNAME = "example.username";
     public static String TOKEN = "example.token";
     public static UrlLoader urlLoader = null;
+    private DownloadStateReceiver mDownloadStateReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -59,6 +61,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
         if (authToken == null) {
             String data = null;
             Intent intent = getIntent();
+            Log.d(TAG,"THIS IS IT" + intent.getData().toString());
             if (intent != null) {
                 Uri uri = intent.getData();
                 if (uri != null) {
@@ -87,6 +90,16 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 Log.d(TAG, "Started");
             }
         }*/
+
+        IntentFilter mStatusIntentFilter = new IntentFilter(UrlService.ACTION_SEND_RESULT);
+        //mStatusIntentFilter.addDataScheme("http");
+        // Instantiates a new DownloadStateReceiver
+
+        mDownloadStateReceiver = new DownloadStateReceiver(this);
+        // Registers the DownloadStateReceiver and its intent filters
+        LocalBroadcastManager.getInstance(this).registerReceiver(mDownloadStateReceiver, mStatusIntentFilter);
+
+
         if (urlLoader != null){
             urlLoader.activity = this;
             if (!urlLoader.getStatus().equals(AsyncTask.Status.FINISHED)){
@@ -95,7 +108,6 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
         }
 
         Log.d(TAG, Credintals.getToken() == null ? "NO TOKEN" : Credintals.getToken());
-
     }
 
     public void downloadAsync(View view){
@@ -105,12 +117,19 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
         Loader<String> loader;
         loader = getLoaderManager().getLoader(1);
         loader.forceLoad();*/
+
+        Intent mServiceIntent = new Intent(this, UrlService.class);
+        mServiceIntent.putExtra(UrlService.PARAM_URL, "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");
+        mServiceIntent.setAction(UrlService.ACTION_GET_URI);
+        startService(mServiceIntent);
+
         urlLoader = new UrlLoader(this);
         urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");
     }
     @Override
     protected void onDestroy(){
         urlLoader.hideDialog();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mDownloadStateReceiver);
         super.onDestroy();
     }
     private int getExpires(){
@@ -146,6 +165,15 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void setResult(String result) {
+        Log.d(TAG, result);
+        Log.d(TAG, result);
+        Log.d(TAG, result);
+        Log.d(TAG, result);
+    }
+
 
     /*@Override
     public Loader<String> onCreateLoader(int i, Bundle bundle) {
