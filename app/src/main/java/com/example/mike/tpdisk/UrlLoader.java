@@ -53,17 +53,13 @@ public class UrlLoader extends AsyncTask<String, Void, String>{
         connector.setUrl(url);
         String answer = connector.getByUrl();
         Log.d(TAG, answer);
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return answer;
     }
     @Override
     protected void onPostExecute(String result) {
         Log.d(TAG, result);
-
+        JsonFileListParser parser = new JsonFileListParser();
+        FileInstanse instanse = parser.parse(result);
         hideDialog();
     }
 }

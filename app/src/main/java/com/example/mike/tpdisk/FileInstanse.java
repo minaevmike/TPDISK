@@ -19,6 +19,16 @@ public class FileInstanse {
     private String mime_type;
     private String md5;
 
+    public Embedded getEmbedded() {
+        return embedded;
+    }
+
+    public void setEmbedded(Embedded embedded) {
+        this.embedded = embedded;
+    }
+
+    private Embedded embedded;
+
     public int getSize() {
         return size;
     }
@@ -124,7 +134,7 @@ public class FileInstanse {
     }
 
     public FileInstanse(int size, String public_key, String origin_path, String name, String created, String public_url,
-                        String modified, String path, String media_type, String preview, String type, String mime_type, String md5) {
+                        String modified, String path, String media_type, String preview, String type, String mime_type, String md5, Embedded embedded) {
         this.size = size;
         this.public_key = public_key;
         this.origin_path = origin_path;
@@ -138,11 +148,12 @@ public class FileInstanse {
         this.type = type;
         this.mime_type = mime_type;
         this.md5 = md5;
+        this.embedded = embedded;
     }
-
     public FileInstanse(){
         this.size = -1;
         this.public_key = this.origin_path = this.name = this.created = this.public_url = this.modified = this.path =
         this.media_type = this.preview = this.type = this.mime_type = this.md5 = "";
+        embedded = null;
     }
 }
