@@ -7,8 +7,10 @@ import android.content.Loader;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class UrlLoader extends AsyncTask<String, Void, String>{
     public static final String TAG = "LOADER";
+    public static final String FILES = "FILES_LIST";
     FragmentActivity activity;
     public UrlLoader(FragmentActivity a){
         activity = a;
@@ -61,6 +64,14 @@ public class UrlLoader extends AsyncTask<String, Void, String>{
         JsonFileListParser parser = new JsonFileListParser();
         FileInstanse instanse = parser.parse(result);
         hideDialog();
+        FolderList folderList = new FolderList();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(FILES, instanse);
+        folderList.setArguments(bundle);
+        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.container, folderList);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
 /*public class UrlLoader extends AsyncTaskLoader<String> {

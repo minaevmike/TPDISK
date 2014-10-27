@@ -1,11 +1,12 @@
 package com.example.mike.tpdisk;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Mike on 27.10.2014.
  */
-public class Embedded {
+public class Embedded implements Serializable{
     private String sort;
     private ArrayList<FileInstanse> items;
     private Integer limit;

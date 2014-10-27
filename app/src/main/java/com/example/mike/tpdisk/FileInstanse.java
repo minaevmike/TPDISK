@@ -1,9 +1,11 @@
 package com.example.mike.tpdisk;
 
+import java.io.Serializable;
+
 /**
  * Created by Mike on 26.10.2014.
  */
-public class FileInstanse {
+public class FileInstanse implements Serializable{
 
     private int size;
     private String public_key;
