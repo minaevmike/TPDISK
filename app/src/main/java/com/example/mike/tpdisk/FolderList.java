@@ -1,54 +1,63 @@
 package com.example.mike.tpdisk;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 /**
  * Created by Mike on 26.10.2014.
  */
 public class FolderList extends Fragment {
-    //private OnItemSelectedListener mCallback;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("CityList", "On CreateView");
+        Log.d("FolderList", "On CreateView");
         return inflater.inflate(R.layout.list, null);
 
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        /*try {
-            mCallback = (OnItemSelectedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnItemSelectedListener");
-        }*/
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setRetainInstance(true);
-        /*Log.d("CityList", "On View Created");
-        ListView list = (ListView) view.findViewById(R.id.list);
-        list.setAdapter(new NewsListAdapter(cities));
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                TextView c = (TextView) view.findViewById(R.id.text);
-                mCallback.onArticleSelected(c.getText().toString());
-                Log.i("onViewCreated DetailFragment", c.getText().toString());
-            }
-        });*/
+        Log.d("FolderList", "On View Created");
+        TableLayout filesTable = (TableLayout) view.findViewById(R.id.files_list);
+        FileInstanse instanse = (FileInstanse) getArguments().getSerializable(UrlLoader.FILES);
+        Embedded embedded = instanse.getEmbedded();
+        ArrayList<FileInstanse> files = embedded.getItems();
+        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(0, 0, 0, 4);
+        for(int i = 0; i < files.size(); i++){
+            LinearLayout cell = new LinearLayout(getActivity());
+            cell.setBackgroundColor(Color.WHITE);
+            cell.setLayoutParams(layoutParams);
+            TableRow file = new TableRow(getActivity());
+            file.setLayoutParams(layoutParams);
+            TextView fileName = new TextView(getActivity());
+            fileName.setText(files.get(i).getName());
+            cell.addView(fileName);
+            file.addView(cell);
+            file.setTag(files.get(i));
+            file.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FileInstanse instanse1 = (FileInstanse)view.getTag();
+                    Log.d("AA", instanse1.getPath());
+                }
+            });
+            filesTable.addView(file);
+        }
     }
 }

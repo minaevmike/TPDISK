@@ -7,8 +7,10 @@ import android.content.Loader;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class UrlLoader extends AsyncTask<String, Void, String>{
     public static final String TAG = "LOADER";
+    public static final String FILES = "FILES_LIST";
     FragmentActivity activity;
     public UrlLoader(FragmentActivity a){
         activity = a;
@@ -48,20 +51,27 @@ public class UrlLoader extends AsyncTask<String, Void, String>{
         Log.d(TAG, hashCode() + " loadInBackground start");
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Authorization", "OAuth " + Credintals.getToken());
-        String answer = Connector.getByUrl(url, headers);
+        Connector connector = new Connector();
+        connector.setHeader(headers);
+        connector.setUrl(url);
+        String answer = connector.getByUrl();
         Log.d(TAG, answer);
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return answer;
     }
     @Override
     protected void onPostExecute(String result) {
         Log.d(TAG, result);
-
+        JsonFileListParser parser = new JsonFileListParser();
+        FileInstanse instanse = parser.parse(result);
         hideDialog();
+        FolderList folderList = new FolderList();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(FILES, instanse);
+        folderList.setArguments(bundle);
+        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.container, folderList);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
 /*public class UrlLoader extends AsyncTaskLoader<String> {
