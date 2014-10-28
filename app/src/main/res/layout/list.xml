@@ -4,12 +4,8 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-            <TableLayout
-                android:id="@+id/files_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-    </ScrollView>
+    <ListView
+        android:id="@+id/files_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>
