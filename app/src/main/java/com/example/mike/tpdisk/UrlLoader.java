@@ -28,6 +28,7 @@ public class UrlLoader extends AsyncTask<String, Void, String>{
         activity = a;
     }
     ProgressDialog progressDialog = null;
+    String type;
     @Override
     protected void onPreExecute() {
         showDialog();
