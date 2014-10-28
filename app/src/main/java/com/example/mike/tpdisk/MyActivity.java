@@ -119,13 +119,13 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         loader = getLoaderManager().getLoader(1);
         loader.forceLoad();*/
 
-        /*Intent mServiceIntent = new Intent(this, UrlService.class);
-        mServiceIntent.putExtra(UrlService.PARAM_URL, "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");
+        Intent mServiceIntent = new Intent(this, UrlService.class);
+        mServiceIntent.putExtra(UrlService.PARAM_URL, "https://downloader.disk.yandex.ru/disk/84c398754ef27b2cbfba12583e77e1c9/54503858/gXqMtXfYLKB8bKPUctpXZ8XVyaCG_b0uxQIAFaZrWZK1_1kaQ-6Ms0dnQ2FDLLLblsg4VIaLrfRKbQetv4dueQ%3D%3D?uid=30937065&filename=var.l&disposition=attachment&hash=&limit=0&content_type=application%2Foctet-stream&fsize=1123&hid=e41f58915f8c41609b4d524c3e19fdff&media_type=audio");
         mServiceIntent.setAction(UrlService.ACTION_GET_URI);
-        startService(mServiceIntent);*/
+        startService(mServiceIntent);
 
-        urlLoader = new UrlLoader(this);
-        urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");
+        /*urlLoader = new UrlLoader(this);
+        urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");*/
     }
     @Override
     protected void onDestroy(){
