@@ -31,8 +31,6 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Toast;
 
-
-
 public class MyActivity extends FragmentActivity implements DownloadStateReceiver.resultGetter /*implements LoaderManager.LoaderCallbacks<String> */{
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
 
@@ -62,7 +60,7 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         // TODO: Fix expires
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        if (bundle.getSerializable(SplashScreenActivity.FILES_FROM_BEGIN) != null && created == 0){
+        if (bundle != null && bundle.getSerializable(SplashScreenActivity.FILES_FROM_BEGIN) != null && created == 0){
             created ++;
             Log.d(TAG, "NOT NULL");
             FolderList folderList = new FolderList();
