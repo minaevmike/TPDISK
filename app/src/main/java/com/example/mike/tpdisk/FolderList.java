@@ -85,9 +85,7 @@ public class FolderList extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Log.d("FileAdapter2", "getView, pos"+String.valueOf(position));
             if (convertView == null) {
-                Log.d("FileAdapter2", "create new");
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.file_list_item, parent, false);
             }
             FileInstance instance = (FileInstance) getItem(position);
