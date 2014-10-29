@@ -6,6 +6,7 @@ import java.io.Serializable;
  * Created by Mike on 26.10.2014.
  */
 public class FileInstance implements Serializable{
+    private static final String DIR = "dir";
 
     private int size;
     private String public_key;
@@ -134,6 +135,8 @@ public class FileInstance implements Serializable{
     public void setMd5(String md5) {
         this.md5 = md5;
     }
+
+    public boolean isDirectory() {return this.type.equals(DIR);}
 
     public FileInstance(int size, String public_key, String origin_path, String name, String created, String public_url,
                         String modified, String path, String media_type, String preview, String type, String mime_type, String md5, Embedded embedded) {

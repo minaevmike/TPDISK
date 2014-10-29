@@ -119,9 +119,11 @@ public class FolderList extends Fragment {
                         }
                     });
                     //convertView.setTag(1);
-                }
-                ImageView img = (ImageView) convertView.findViewById(R.id.image);
 
+                    if(instance.isDirectory()) {
+                        ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.folder);
+                    }
+                }
 
                 //TODO: REAPAIR CLICK
 
