@@ -4,5 +4,6 @@
     <string name="app_name">TPDISK</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="splash_test_label">Яндекс Диск</string>
 
 </resources>

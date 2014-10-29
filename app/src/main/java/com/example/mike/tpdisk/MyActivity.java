@@ -62,7 +62,7 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         if (authToken == null) {
             String data = null;
             Intent intent = getIntent();
-            Log.d(TAG, "THIS IS IT" + intent.getData().toString());
+            //Log.d(TAG, "THIS IS IT" + intent.getData().toString());
             if (intent != null) {
                 Uri uri = intent.getData();
                 if (uri != null) {
