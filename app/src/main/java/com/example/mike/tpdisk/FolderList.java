@@ -26,6 +26,7 @@ import java.util.ArrayList;
  * Created by Mike on 26.10.2014.
  */
 public class FolderList extends Fragment {
+    private String prev_path = "";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("FolderList", "On CreateView");
@@ -119,7 +120,8 @@ public class FolderList extends Fragment {
                                     e.printStackTrace();
                                 }
                                 UrlLoader urlLoader = new UrlLoader(getActivity());
-                                urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
+                                urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + prev_path + path);
+                                prev_path = path;
 
                             }else{
                                 Log.d("AA","no text view");
