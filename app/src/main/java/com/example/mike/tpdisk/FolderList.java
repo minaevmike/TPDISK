@@ -1,8 +1,13 @@
 package com.example.mike.tpdisk;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +16,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
 
 /**
  * Created by Mike on 26.10.2014.
@@ -121,6 +128,10 @@ public class FolderList extends Fragment {
                     if(instance.isDirectory()) {
                         ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.folder);
                     }
+                    if(instance.hasPreview()) {
+                        Log.d("ADAPTER________", instance.getPreview());
+                        new PreviewDownloader().execute(new Pair<View, String>(convertView, instance.getPreview()));
+                    }
                 }
 
                 //TODO: REAPAIR CLICK
@@ -129,4 +140,27 @@ public class FolderList extends Fragment {
             return convertView;
         }
     }
+
+
+    public class PreviewDownloader extends AsyncTask<Pair<View, String>, Void, Bitmap> {
+        Bitmap bitmap = null;
+        View view = null;
+        @Override
+        protected Bitmap doInBackground(Pair<View, String>[] params) {
+            view = params[0].first;
+            try {
+                bitmap = HttpDownloadUtility.bitmapDownloadUrl(params[0].second);
+            } catch (Exception e) {
+                Log.d("Background Task", e.toString());
+            }
+            return bitmap;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            ((ImageView) view.findViewById(R.id.image)).setImageBitmap(result);
+        }
+    }
+
+
+
 }

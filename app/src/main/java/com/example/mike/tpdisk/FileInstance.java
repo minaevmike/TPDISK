@@ -138,6 +138,8 @@ public class FileInstance implements Serializable{
 
     public boolean isDirectory() {return this.type.equals(DIR);}
 
+    public boolean hasPreview() {return (this.preview != null)&&(!this.preview.equals(""));}
+
     public FileInstance(int size, String public_key, String origin_path, String name, String created, String public_url,
                         String modified, String path, String media_type, String preview, String type, String mime_type, String md5, Embedded embedded) {
         this.size = size;
