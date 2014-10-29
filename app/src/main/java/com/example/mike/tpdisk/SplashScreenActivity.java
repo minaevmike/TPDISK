@@ -22,10 +22,6 @@ public class SplashScreenActivity extends Activity {
 
     }
 
-    /**
-     * Async Task: can be used to load DB, images during which the splash screen
-     * is shown to user
-     */
     private class BackgroundSplashTask extends AsyncTask<Object, Integer, Integer> {
 
         @Override
@@ -48,10 +44,6 @@ public class SplashScreenActivity extends Activity {
             super.onPostExecute(null);
             Intent i = new Intent(SplashScreenActivity.this,
                     MyActivity.class);
-            // any info loaded can during splash_show
-            // can be passed to main activity using
-            // below
-            //i.putExtra("loaded_info", " ");
             startActivity(i);
             finish();
         }
