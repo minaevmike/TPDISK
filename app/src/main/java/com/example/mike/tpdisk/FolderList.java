@@ -1,6 +1,7 @@
 package com.example.mike.tpdisk;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -105,26 +106,33 @@ public class FolderList extends Fragment {
 
                 if (name != null) {
                     name.setText(instance.getName());
+                    name.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            TextView instanse1 = (TextView) view.findViewById(R.id.text);
+
+                            if (instanse1 != null) {
+                                String path = "";
+                                try {
+                                    path = URLEncoder.encode(instanse1.getText().toString(), "UTF-8");
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                }
+                                UrlLoader urlLoader = new UrlLoader(getActivity());
+                                urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
+
+                            }else{
+                                Log.d("AA","no text view");
+                            }
+                        }
+                    });
+                    //convertView.setTag(1);
                 }
                 ImageView img = (ImageView) convertView.findViewById(R.id.image);
 
 
                 //TODO: REAPAIR CLICK
-                /*img.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        TextView instanse1 = (TextView) view.findViewById(R.id.text);
-                        Log.d("AA", instanse1.getText().toString());
-                        String path = "";
-                        try {
-                            path = URLEncoder.encode(instanse1.getText().toString(), "UTF-8");
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        }
-                        UrlLoader urlLoader = new UrlLoader(getActivity());
-                        urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
-                    }
-                });*/
+
             }
             return convertView;
         }
