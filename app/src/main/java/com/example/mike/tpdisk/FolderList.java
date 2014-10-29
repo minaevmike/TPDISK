@@ -95,7 +95,7 @@ public class FolderList extends Fragment {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.file_list_item, parent, false);
             }
-            FileInstance instance = (FileInstance) getItem(position);
+            FileInstance instance = getItem(position);
 
             if (instance != null) {
 
@@ -103,20 +103,26 @@ public class FolderList extends Fragment {
 
                 if (name != null) {
                     name.setText(instance.getName());
+                    name.setTag(instance);
                     name.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            TextView instanse1 = (TextView) view.findViewById(R.id.text);
+                            FileInstance instanse1 = (FileInstance)view.getTag();
 
                             if (instanse1 != null) {
                                 String path = "";
                                 try {
-                                    path = URLEncoder.encode(instanse1.getText().toString(), "UTF-8");
+                                    path = URLEncoder.encode(instanse1.getPath(), "UTF-8");
                                 } catch (UnsupportedEncodingException e) {
                                     e.printStackTrace();
                                 }
-                                UrlLoader urlLoader = new UrlLoader(getActivity());
-                                urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
+                                if(instanse1.isDirectory()) {
+                                    UrlLoader urlLoader = new UrlLoader(getActivity());
+                                    urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
+                                }else {
+                                    AsyncDownloadFile asyncDownloadFile = new AsyncDownloadFile(getActivity());
+                                    asyncDownloadFile.execute(path);
+                                }
 
                             }else{
                                 Log.d("AA","no text view");
