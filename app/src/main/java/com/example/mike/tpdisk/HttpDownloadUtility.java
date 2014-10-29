@@ -80,12 +80,8 @@ public class HttpDownloadUtility {
             URL url = new URL(strUrl);
             /** Creating an http connection to communcate with url */
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            HashMap<String, String> headers = new HashMap<String, String>();
-            headers.put("Authorization", "OAuth " + Credintals.getToken());
+            urlConnection.setRequestProperty("Authorization", "OAuth " + Credintals.getToken());
 
-            for(Map.Entry<String, String> entry : headers.entrySet()) {
-                urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
-            }
             /** Connecting to url */
             urlConnection.connect();
 
