@@ -1,26 +1,18 @@
 package com.example.mike.tpdisk;
 
-import android.app.Activity;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 
 /**
  * Created by Mike on 26.10.2014.
@@ -39,13 +31,13 @@ public class FolderList extends Fragment {
         setRetainInstance(true);
         Log.d("FolderList", "On View Created");
         //TableLayout filesTable = (TableLayout) view.findViewById(R.id.files_list);
-        FileInstanse instanse = (FileInstanse) getArguments().getSerializable(UrlLoader.FILES);
+        FileInstance instanse = (FileInstance) getArguments().getSerializable(UrlLoader.FILES);
         Embedded embedded = instanse.getEmbedded();
-        /*ArrayList<FileInstanse> files = embedded.getItems();
+        /*ArrayList<FileInstance> files = embedded.getItems();
         TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(0, 0, 0, 4);*/
 
-        FileAdapter2 adapter = new FileAdapter2(embedded.getItems().toArray(new FileInstanse[embedded.getItems().size()]));
+        FileAdapter2 adapter = new FileAdapter2(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
         ListView filesTable = (ListView) view.findViewById(R.id.files_list);
 
         filesTable.setAdapter(adapter);
@@ -65,7 +57,7 @@ public class FolderList extends Fragment {
                 file.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        FileInstanse instanse1 = (FileInstanse) view.getTag();
+                        FileInstance instanse1 = (FileInstance) view.getTag();
                         Log.d("AA", instanse1.getPath());
                         String path = "";
                         try {
@@ -86,8 +78,8 @@ public class FolderList extends Fragment {
     public interface OnItemSelectedListener {
         public void onArticleSelected(String city);
     }
-    private class FileAdapter2 extends ArrayAdapter<FileInstanse> {
-        public FileAdapter2(FileInstanse[] objects) {
+    private class FileAdapter2 extends ArrayAdapter<FileInstance> {
+        public FileAdapter2(FileInstance[] objects) {
             super(getActivity(), 0, objects);
         }
 
@@ -98,7 +90,7 @@ public class FolderList extends Fragment {
                 Log.d("FileAdapter2", "create new");
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.file_list_item, parent, false);
             }
-            FileInstanse instance = (FileInstanse) getItem(position);
+            FileInstance instance = (FileInstance) getItem(position);
 
             if (instance != null) {
 

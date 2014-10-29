@@ -42,7 +42,7 @@ public class FileAdapter  extends BaseAdapter {
             fileView = view;
         }
 
-        FileInstanse instance = (FileInstanse) getItem(i);
+        FileInstance instance = (FileInstance) getItem(i);
 
         if (instance != null) {
 

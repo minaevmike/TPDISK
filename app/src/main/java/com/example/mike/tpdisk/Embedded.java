@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class Embedded implements Serializable{
     private String sort;
-    private ArrayList<FileInstanse> items;
+    private ArrayList<FileInstance> items;
     private Integer limit;
     private Integer offset;
     private String path;
@@ -22,11 +22,11 @@ public class Embedded implements Serializable{
         this.sort = sort;
     }
 
-    public ArrayList<FileInstanse> getItems() {
+    public ArrayList<FileInstance> getItems() {
         return items;
     }
 
-    public void setItems(ArrayList<FileInstanse> items) {
+    public void setItems(ArrayList<FileInstance> items) {
         this.items = items;
     }
 
@@ -62,7 +62,7 @@ public class Embedded implements Serializable{
         this.total = total;
     }
 
-    public Embedded(String sort, ArrayList<FileInstanse> items, int limit, int offset, String path, int total) {
+    public Embedded(String sort, ArrayList<FileInstance> items, int limit, int offset, String path, int total) {
         this.sort = sort;
         this.items = items;
         this.limit = limit;

@@ -2,17 +2,11 @@ package com.example.mike.tpdisk;
 
 import android.util.Log;
 
-import com.yandex.disk.client.TransportClient;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.awt.font.TextAttribute;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Mike on 26.10.2014.
@@ -36,7 +30,7 @@ public class JsonFileListParser {
         }
     }
 
-    private FileInstanse getFileInstanse(JSONObject object){
+    private FileInstance getFileInstanse(JSONObject object){
         Log.d(TAG, object.toString());
         Integer size = getIntOrNull(object, "size");
         String public_key = getStringOrNull(object, "public_key");
@@ -52,13 +46,13 @@ public class JsonFileListParser {
         String mime_type =  getStringOrNull(object, "mime_type");
         String md5 = getStringOrNull(object, "md5");
         Embedded embedded = new Embedded();
-        FileInstanse fileInstanse = new FileInstanse(size, public_key, origin_path, name, created, public_url, modified,
+        FileInstance fileInstance = new FileInstance(size, public_key, origin_path, name, created, public_url, modified,
                 path, media_type, preview,type, mime_type, md5, embedded);
-        return fileInstanse;
+        return fileInstance;
     }
-    public FileInstanse parse(String s) {
-        FileInstanse instanse =  null;
-        ArrayList<FileInstanse> list = new ArrayList<FileInstanse>();
+    public FileInstance parse(String s) {
+        FileInstance instanse =  null;
+        ArrayList<FileInstance> list = new ArrayList<FileInstance>();
         try{
             JSONObject reader = new JSONObject(s);
             instanse = getFileInstanse(reader);

@@ -1,21 +1,13 @@
 package com.example.mike.tpdisk;
 
 import android.app.ProgressDialog;
-import android.content.AsyncTaskLoader;
-import android.content.Context;
-import android.content.Loader;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Mike on 26.10.2014.
@@ -68,7 +60,7 @@ public class UrlLoader extends AsyncTask<String, Void, String>{
     protected void onPostExecute(String result) {
         Log.d(TAG, result);
         JsonFileListParser parser = new JsonFileListParser();
-        FileInstanse instanse = parser.parse(result);
+        FileInstance instanse = parser.parse(result);
         hideDialog();
         FolderList folderList = new FolderList();
         Bundle bundle = new Bundle();
