@@ -134,10 +134,11 @@ public class UrlService extends IntentService {
             fileOutputStream.close();
             connection.disconnect();
             builder.setContentText("File downloaded to " + file.getPath()).setProgress(0, 0, false).
-            setStyle(new NotificationCompat.BigTextStyle().bigText("File downloaded to " + file.getPath() + "A LOT OF TEXT TO TEST BIG NOTFICATION ACTUALY I HOPE IT WILL WORK COZ ITS ALREADY 00:01, <3 ANDROID, H8 APPELSE"));
+            setStyle(new NotificationCompat.BigTextStyle().bigText("File downloaded to " + file.getPath()));
             Intent clickNotifyIntent = new Intent();
             clickNotifyIntent.setAction(Intent.ACTION_VIEW);
-            clickNotifyIntent.setDataAndType(Uri.fromFile(file), map.get("media_type") + "/*");
+            //clickNotifyIntent.setDataAndType(Uri.fromFile(file), map.get("media_type") + "/*");
+            clickNotifyIntent.setData(Uri.fromFile(file));
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, clickNotifyIntent,0);
             builder.setContentIntent(pendingIntent);
             manager.notify(id, builder.build());
@@ -154,5 +155,12 @@ public class UrlService extends IntentService {
         Log.d(TAG, "SendResult");
         Intent localIntent = new Intent(ACTION_SEND_RESULT).putExtra(PARAM_RESULT, result);
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+    }
+
+    @Override
+    public void onDestroy() {
+
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
     }
 }
