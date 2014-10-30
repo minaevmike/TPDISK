@@ -1,11 +1,13 @@
 package com.example.mike.tpdisk;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 
 
 /**
@@ -120,8 +123,7 @@ public class FolderList extends Fragment {
                                     UrlLoader urlLoader = new UrlLoader(getActivity());
                                     urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
                                 }else {
-                                    AsyncDownloadFile asyncDownloadFile = new AsyncDownloadFile(getActivity());
-                                    asyncDownloadFile.execute(path);
+                                    (new AsyncDownloadFile()).execute(path);
                                 }
 
                             }else{
@@ -166,6 +168,37 @@ public class FolderList extends Fragment {
             ((ImageView) view.findViewById(R.id.image)).setImageBitmap(result);
         }
     }
+
+    public class AsyncDownloadFile extends AsyncTask<String, Void, String> {
+        private static final String TAG = "AsyncDownloadFile";
+        @Override
+        protected String doInBackground(String... strings) {
+            String path = strings[0];
+            String url = "https://cloud-api.yandex.net:443/v1/disk/resources/download?path=" + path;
+            Log.d(TAG, hashCode() + " loadInBackground start");
+            HashMap<String, String> headers = new HashMap<String, String>();
+            headers.put("Authorization", "OAuth " + Credintals.getToken());
+            Connector connector = new Connector();
+            connector.setHeader(headers);
+            connector.setUrl(url);
+            String answer = connector.getByUrl();
+            if (answer == null){
+                Log.d(TAG, url);
+            }
+            //Log.d(TAG, answer);
+            return answer;
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            JsonParser parser = new JsonParser();
+            LinkInstance instance = parser.parse(result);
+            Intent mServiceIntent = new Intent(getActivity(), UrlService.class);
+            mServiceIntent.putExtra(UrlService.PARAM_URL, instance.getHref());
+            mServiceIntent.setAction(UrlService.ACTION_GET_URI);
+            getActivity().startService(mServiceIntent);
+        }
+    }
+
 
 
 
