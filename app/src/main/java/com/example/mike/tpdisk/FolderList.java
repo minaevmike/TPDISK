@@ -135,6 +135,8 @@ public class FolderList extends Fragment {
 
                     if(instance.isDirectory()) {
                         ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.folder);
+                    } else {
+                        ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.default_ico);
                     }
                     if(instance.hasPreview()) {
                         Log.d("ADAPTER________", instance.getPreview());
