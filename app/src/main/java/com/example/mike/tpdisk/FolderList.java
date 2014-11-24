@@ -40,12 +40,13 @@ public class FolderList extends Fragment {
         FileInstance instance = (FileInstance) getArguments().getSerializable(UrlLoader.FILES);
         Embedded embedded = instance.getEmbedded();
         FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
+
         final ListView filesTable = (ListView) view.findViewById(R.id.files_list);
-        //filesTable.setOnItemClickListener();
         filesTable.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 (new FileOperationsDialog(/*(FileInstance)adapterView.getItemAtPosition(pos)*/)).show(getFragmentManager(), getTag());
+                // либо передавать файл параметром, либо сделать диалог внутренним классом для реализации функционала над файлами
                 return true;
             }
         });
@@ -54,7 +55,7 @@ public class FolderList extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
                 FileInstance file = (FileInstance)adapterView.getItemAtPosition(pos);
                 if (file != null) {
-                    String path = "";
+                    String path = null;
                     try {
                         path = URLEncoder.encode(file.getPath(), "UTF-8");
                     } catch (UnsupportedEncodingException e) {
@@ -76,10 +77,6 @@ public class FolderList extends Fragment {
         filesTable.setAdapter(adapter);
     }
 
-    // Container Activity must implement this interface
-    public interface OnItemSelectedListener {
-        public void onArticleSelected(String city);
-    }
     private class FileAdapter extends ArrayAdapter<FileInstance> {
         public FileAdapter(FileInstance[] objects) {
             super(getActivity(), 0, objects);

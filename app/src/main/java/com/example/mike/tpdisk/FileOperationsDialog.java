@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 /**
@@ -12,8 +13,8 @@ import android.support.v4.app.DialogFragment;
  */
 public class FileOperationsDialog extends DialogFragment {
     @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.file_operations_title)
                 .setItems(R.array.file_operations_array, new DialogInterface.OnClickListener() {
