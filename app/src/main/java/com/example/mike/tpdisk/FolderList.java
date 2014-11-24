@@ -10,6 +10,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -39,7 +40,38 @@ public class FolderList extends Fragment {
         FileInstance instance = (FileInstance) getArguments().getSerializable(UrlLoader.FILES);
         Embedded embedded = instance.getEmbedded();
         FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
-        ListView filesTable = (ListView) view.findViewById(R.id.files_list);
+        final ListView filesTable = (ListView) view.findViewById(R.id.files_list);
+        //filesTable.setOnItemClickListener();
+        filesTable.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                (new FileOperationsDialog(/*(FileInstance)adapterView.getItemAtPosition(pos)*/)).show(getFragmentManager(), getTag());
+                return true;
+            }
+        });
+        filesTable.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
+                FileInstance file = (FileInstance)adapterView.getItemAtPosition(pos);
+                if (file != null) {
+                    String path = "";
+                    try {
+                        path = URLEncoder.encode(file.getPath(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    if(file.isDirectory()) {
+                        UrlLoader urlLoader = new UrlLoader(getActivity());
+                        urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
+                    }else {
+                        (new AsyncDownloadFile()).execute(path);
+                    }
+
+                }else{
+                    Log.d("AA","no text view");
+                }
+            }
+        });
 
         filesTable.setAdapter(adapter);
     }
@@ -67,38 +99,6 @@ public class FolderList extends Fragment {
                 if (name != null) {
                     name.setText(instance.getName());
                     name.setTag(instance);
-                    name.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            FileInstance instance1 = (FileInstance)view.getTag();
-
-                            if (instance1 != null) {
-                                String path = "";
-                                try {
-                                    path = URLEncoder.encode(instance1.getPath(), "UTF-8");
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
-                                }
-                                if(instance1.isDirectory()) {
-                                    UrlLoader urlLoader = new UrlLoader(getActivity());
-                                    urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
-                                }else {
-                                    (new AsyncDownloadFile()).execute(path);
-                                }
-
-                            }else{
-                                Log.d("AA","no text view");
-                            }
-                        }
-                    });
-                    name.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            FileInstance instance = (FileInstance)view.getTag();
-                            (new FileOperationsDialog()).show(getFragmentManager(),getTag());
-                            return false;
-                        }
-                    });
                     //convertView.setTag(1);
 
                     if(instance.isDirectory()) {
