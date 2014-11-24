@@ -2,12 +2,9 @@ package com.example.mike.tpdisk;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -18,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -179,7 +175,7 @@ public class FolderList extends Fragment {
             String url = "https://cloud-api.yandex.net:443/v1/disk/resources/download?path=" + path;
             Log.d(TAG, hashCode() + " loadInBackground start");
             HashMap<String, String> headers = new HashMap<String, String>();
-            headers.put("Authorization", "OAuth " + Credintals.getToken());
+            headers.put("Authorization", "OAuth " + Credentials.getToken());
             Connector connector = new Connector();
             connector.setHeader(headers);
             connector.setUrl(url);

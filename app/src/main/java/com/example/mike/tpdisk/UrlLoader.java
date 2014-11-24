@@ -45,7 +45,7 @@ public class UrlLoader extends AsyncTask<String, Void, String>{
         String url = strings[0];
         Log.d(TAG, hashCode() + " loadInBackground start");
         HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Authorization", "OAuth " + Credintals.getToken());
+        headers.put("Authorization", "OAuth " + Credentials.getToken());
         Connector connector = new Connector();
         connector.setHeader(headers);
         connector.setUrl(url);
@@ -98,7 +98,7 @@ public class UrlLoader extends AsyncTask<String, Void, String>{
     public String loadInBackground() {
         Log.d(TAG, hashCode() + " loadInBackground start");
         HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Authorization", "OAuth " + Credintals.getToken());
+        headers.put("Authorization", "OAuth " + Credentials.getToken());
         String answer = Connector.getByUrl(url, headers);
         Log.d(TAG, answer);
         try {

@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Andrey 29.10.2014.
@@ -80,7 +78,7 @@ public class HttpDownloadUtility {
             URL url = new URL(strUrl);
             /** Creating an http connection to communcate with url */
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestProperty("Authorization", "OAuth " + Credintals.getToken());
+            urlConnection.setRequestProperty("Authorization", "OAuth " + Credentials.getToken());
 
             /** Connecting to url */
             urlConnection.connect();

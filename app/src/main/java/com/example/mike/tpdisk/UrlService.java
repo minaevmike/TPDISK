@@ -1,35 +1,25 @@
 package com.example.mike.tpdisk;
 
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.Context;
 import android.net.Uri;
-import android.nfc.Tag;
-import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -89,7 +79,7 @@ public class UrlService extends IntentService {
         Log.d(TAG, "handleActionGetUri");
         Log.d(TAG, hashCode() + " loadInBackground start");
         /*HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Authorization", "OAuth " + Credintals.getToken());
+        headers.put("Authorization", "OAuth " + Credentials.getToken());
         Connector connector = new Connector();
         connector.setHeader(headers);
         connector.setUrl(url);
@@ -104,7 +94,7 @@ public class UrlService extends IntentService {
             HttpURLConnection connection = (HttpURLConnection) u.openConnection();
             connection.setRequestMethod("GET");
             connection.setDoOutput(true);
-            connection.setRequestProperty("Authorization", "OAuth " + Credintals.getToken());
+            connection.setRequestProperty("Authorization", "OAuth " + Credentials.getToken());
             connection.connect();
 
             File cardRoot = Environment.getExternalStorageDirectory();

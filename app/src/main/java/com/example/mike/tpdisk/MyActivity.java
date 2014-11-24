@@ -1,26 +1,13 @@
 package com.example.mike.tpdisk;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorDescription;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.LoaderManager;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -28,8 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.view.View;
-import android.widget.Toast;
 
 public class MyActivity extends FragmentActivity implements DownloadStateReceiver.resultGetter /*implements LoaderManager.LoaderCallbacks<String> */{
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
@@ -98,12 +83,12 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
                 String token = parts[0].split("=")[1];
                 Integer expires = Integer.parseInt(parts[2].split("=")[1]);
                 utils.saveData(this, token, expires);
-                Credintals.setToken(token);
+                Credentials.setToken(token);
                 Log.d(TAG, data);
             }
         }
         else {
-            Credintals.setToken(authToken);
+            Credentials.setToken(authToken);
         }
         /*Loader<String> loader= getLoaderManager().getLoader(1);
         if (loader != null){
@@ -129,7 +114,7 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
             }
         }
 
-        Log.d(TAG, Credintals.getToken() == null ? "NO TOKEN" : Credintals.getToken());
+        Log.d(TAG, Credentials.getToken() == null ? "NO TOKEN" : Credentials.getToken());
     }
 
     @Override
