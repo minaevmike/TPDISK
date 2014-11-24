@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array
+        name="file_operations_array">
+        <item>Скачать</item>
+        <item>Переименовать</item>
+        <item>Удалить</item>
+        <item>Информация</item>
+    </array>
+</resources>
+
