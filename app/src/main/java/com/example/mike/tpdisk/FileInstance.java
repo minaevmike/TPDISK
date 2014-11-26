@@ -64,6 +64,10 @@ public class FileInstance implements Serializable{
         return path;
     }
 
+    public String getNormalizedPath() {
+        return path.split(":/")[1];
+    }
+
     public String getMedia_type() {
         return media_type;
     }
