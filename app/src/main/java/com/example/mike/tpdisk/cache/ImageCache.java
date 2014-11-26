@@ -18,10 +18,8 @@ import java.io.IOException;
 
 
 public class ImageCache {
-    private static volatile ImageCache instance;
     private static final File ROOT = Environment.getExternalStorageDirectory();
     private static final File CACHE_FOLDER = new File(ROOT, "tpyadisk_cache");
-    private static final String TAG = "ImageCache";
 
     public ImageCache() {
         if(!CACHE_FOLDER.exists()) {

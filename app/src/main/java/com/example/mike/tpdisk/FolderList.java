@@ -1,9 +1,14 @@
 package com.example.mike.tpdisk;
 
+import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.Pair;
@@ -18,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.mike.tpdisk.cache.ImageCache;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -39,6 +45,10 @@ public class FolderList extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setRetainInstance(true);
         Log.d("FolderList", "On View Created");
+
+
+
+
         FileInstance instance = (FileInstance) getArguments().getSerializable(UrlLoader.FILES);
         Embedded embedded = instance.getEmbedded();
         FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
@@ -67,7 +77,7 @@ public class FolderList extends Fragment {
                         UrlLoader urlLoader = new UrlLoader(getActivity());
                         urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
                     }else {
-                        (new AsyncDownloadFile()).execute(path);
+                        (new AsyncDownloadFile()).execute(path, getActivity(), file.getName());
                     }
 
                 }else{
@@ -151,11 +161,16 @@ public class FolderList extends Fragment {
         }
     }
 
-    public class AsyncDownloadFile extends AsyncTask<String, Void, String> {
+    public class AsyncDownloadFile extends AsyncTask<Object, Void, String> {
+        private Activity activity = null;
+        private String name = null;
+
         private static final String TAG = "AsyncDownloadFile";
         @Override
-        protected String doInBackground(String... strings) {
-            String path = strings[0];
+        protected String doInBackground(Object... params) {
+            String path = (String) params[0];
+            activity = (Activity) params[1];
+            name = (String) params[2];
             String url = "https://cloud-api.yandex.net:443/v1/disk/resources/download?path=" + path;
             Log.d(TAG, hashCode() + " loadInBackground start");
             HashMap<String, String> headers = new HashMap<String, String>();
@@ -174,10 +189,15 @@ public class FolderList extends Fragment {
         protected void onPostExecute(String result) {
             JsonParser parser = new JsonParser();
             LinkInstance instance = parser.parse(result);
-            Intent mServiceIntent = new Intent(getActivity(), UrlService.class);
-            mServiceIntent.putExtra(UrlService.PARAM_URL, instance.getHref());
-            mServiceIntent.setAction(UrlService.ACTION_GET_URI);
-            getActivity().startService(mServiceIntent);
+
+            DownloadManager downloadmanager =(DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
+            downloadmanager.enqueue(new DownloadManager.Request(Uri.parse(instance.getHref()))
+                    .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
+                    .setAllowedOverRoaming(true)
+                    .setTitle(name)
+                    .setDescription("TPDisk download")
+                    .addRequestHeader("Authorization", "OAuth " + Credentials.getToken())
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED));
         }
     }
 
