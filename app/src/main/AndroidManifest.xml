@@ -46,6 +46,12 @@
             android:launchMode="singleTask" >
         </activity>
 
+        <activity
+            android:name=".preferences.PreferencesActivity"
+            android:label="@string/preferences_activity"
+            android:launchMode="singleTask" >
+        </activity>
+
         <service
             android:name=".UrlService"
             android:exported="false" >

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pref_cat_misc_title"
+        android:key="pref_cat_misc_settings">
+        <CheckBoxPreference
+            android:key="@string/pref_notify_download_key"
+            android:title="@string/pref_notify_download_start"
+            android:summary="@string/pref_notify_download_start_summ"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.Pair;
@@ -20,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mike.tpdisk.cache.ImageCache;
 
@@ -33,6 +36,8 @@ import java.util.HashMap;
  * Created by Mike on 26.10.2014.
  */
 public class FolderList extends Fragment {
+    Toast toast;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("FolderList", "On CreateView");
@@ -198,10 +203,23 @@ public class FolderList extends Fragment {
                     .setDescription("TPDisk download")
                     .addRequestHeader("Authorization", "OAuth " + Credentials.getToken())
                     .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED));
+            
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
+            final String NOTIFY_DOWNLOAD = activity.getApplicationContext().getString(R.string.pref_notify_download_key);
+            if(sharedPref.getBoolean(NOTIFY_DOWNLOAD, true)) {
+                showToastWithoutSpam("Download started", activity.getApplicationContext());
+            }
         }
     }
 
 
-
+    public void showToastWithoutSpam (String text, Context context){
+        try{ toast.getView().isShown();
+            toast.setText(text);
+        } catch (Exception e) {
+            toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+        }
+        toast.show();
+    }
 
 }
