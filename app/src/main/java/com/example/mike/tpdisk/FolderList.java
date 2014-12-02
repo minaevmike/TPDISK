@@ -203,7 +203,7 @@ public class FolderList extends Fragment {
                     .setDescription("TPDisk download")
                     .addRequestHeader("Authorization", "OAuth " + Credentials.getToken())
                     .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED));
-            
+
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
             final String NOTIFY_DOWNLOAD = activity.getApplicationContext().getString(R.string.pref_notify_download_key);
             if(sharedPref.getBoolean(NOTIFY_DOWNLOAD, true)) {

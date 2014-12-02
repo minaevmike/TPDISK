@@ -3,9 +3,6 @@ package com.example.mike.tpdisk.cache;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.util.Log;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,6 +20,7 @@ public class ImageCache {
 
     public ImageCache() {
         if(!CACHE_FOLDER.exists()) {
+            //noinspection ResultOfMethodCallIgnored
             CACHE_FOLDER.mkdir();
         }
     }
@@ -37,10 +35,12 @@ public class ImageCache {
 
     public void cache(Bitmap b, String path) {
         File file = new File(CACHE_FOLDER + File.separator + path);
-        boolean exists = file.getParentFile().mkdirs();
+        //noinspection ResultOfMethodCallIgnored
+        file.getParentFile().mkdirs();
 
         try {
-            boolean exists_file = file.createNewFile();
+            //noinspection ResultOfMethodCallIgnored
+            file.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }

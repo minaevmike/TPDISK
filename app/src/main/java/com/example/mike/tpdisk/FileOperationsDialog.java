@@ -19,8 +19,6 @@ public class FileOperationsDialog extends DialogFragment {
         builder.setTitle(R.string.file_operations_title)
                 .setItems(R.array.file_operations_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
                     }
                 });
         return builder.create();
