@@ -3,17 +3,14 @@ package com.example.mike.tpdisk;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +23,6 @@ import android.widget.Toast;
 
 import com.example.mike.tpdisk.cache.ImageCache;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -115,9 +111,6 @@ public class FolderList extends Fragment {
                     name.setTag(instance);
                     setAndCachePreview(instance, convertView);
                 }
-
-                //TODO: REAPAIR CLICK
-
             }
             return convertView;
         }
@@ -130,29 +123,31 @@ public class FolderList extends Fragment {
             ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.default_ico);
         }
         if(instance.hasPreview()) {
-            ImageCache cache = new ImageCache();
-            if(cache.isCached(instance.getNormalizedPath())) {
+            ImageCache cache = new ImageCache(getActivity());
+            if(cache.isCached(instance.getNormalizedPath(), instance.getMd5())) {
                 ((ImageView) convertView.findViewById(R.id.image)).setImageBitmap(cache.getPreview(instance.getNormalizedPath()));
                 Log.d("CACHE", "WAS CACHED!!!");
             } else {
-                new PreviewDownloader().execute(convertView, instance.getPreview(), instance.getNormalizedPath());
+                new PreviewDownloader().execute(convertView, instance, cache);
                 Log.d("CACHE", "DOWNLOAD!!!");
             }
-
         }
     }
 
 
     public class PreviewDownloader extends AsyncTask<Object, Void, Bitmap> {
-        Bitmap bitmap = null;
+        FileInstance instance = null;
         View view = null;
-        String cache_path = null;
+        ImageCache imageCache = null;
         @Override
         protected Bitmap doInBackground(Object[] params) {
             view = (View) params[0];
-            cache_path = (String) params[2];
+            instance = (FileInstance) params[1];
+            imageCache = (ImageCache) params[2];
+
+            Bitmap bitmap = null;
             try {
-                bitmap = HttpDownloadUtility.bitmapDownloadUrl((String) params[1]);
+                bitmap = HttpDownloadUtility.bitmapDownloadUrl(instance.getPreview());
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());
             }
@@ -161,8 +156,7 @@ public class FolderList extends Fragment {
 
         protected void onPostExecute(Bitmap result) {
             ((ImageView) view.findViewById(R.id.image)).setImageBitmap(result);
-            ImageCache c = new ImageCache();
-            c.cache(result, cache_path);
+            imageCache.cache(result, instance.getNormalizedPath(), instance.getMd5());
         }
     }
 
