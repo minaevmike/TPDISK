@@ -102,30 +102,31 @@ public class DB {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-        ArrayList<FileInstance> items = fileInstance.getEmbedded().getItems();
         ContentValues values = new ContentValues();
-        for(int i = 0; i < items.size(); ++i)
-        {
-            values.put(COLUMN_PATH, items.get(i).getPath());
-            values.put(COLUMN_TYPE, items.get(i).getType());
-            values.put(COLUMN_NAME, items.get(i).getName());
-            values.put(COLUMN_MODIFIED, items.get(i).getModified());
-            values.put(COLUMN_CREATED, items.get(i).getCreated());
-            values.put(COLUMN_SIZE, items.get(i).getSize());
-            values.put(COLUMN_PUBLIC_KEY, items.get(i).getPublic_key());
-            values.put(COLUMN_ORIG_PATH, items.get(i).getOrigin_path());
-            values.put(COLUMN_PUBLIC_URL, items.get(i).getPublic_url());
-            values.put(COLUMN_MEDIA_TYPE, items.get(i).getMedia_type());
-            values.put(COLUMN_PREVIEW, items.get(i).getPreview());
-            values.put(COLUMN_MIME_TYPE, items.get(i).getMime_type());
-            values.put(COLUMN_MD5, items.get(i).getMd5());
-            values.put(COLUMN_PATH_TO_FILE, fileInstance.getPath());
-            try {
-                database.replaceOrThrow(DB_TABLE, null, values);
-            } catch (Exception e) {
-                e.printStackTrace();
+        if(fileInstance.getEmbedded().getItems() != null) {
+            ArrayList<FileInstance> items = fileInstance.getEmbedded().getItems();
+            for (int i = 0; i < items.size(); ++i) {
+                values.put(COLUMN_PATH, items.get(i).getPath());
+                values.put(COLUMN_TYPE, items.get(i).getType());
+                values.put(COLUMN_NAME, items.get(i).getName());
+                values.put(COLUMN_MODIFIED, items.get(i).getModified());
+                values.put(COLUMN_CREATED, items.get(i).getCreated());
+                values.put(COLUMN_SIZE, items.get(i).getSize());
+                values.put(COLUMN_PUBLIC_KEY, items.get(i).getPublic_key());
+                values.put(COLUMN_ORIG_PATH, items.get(i).getOrigin_path());
+                values.put(COLUMN_PUBLIC_URL, items.get(i).getPublic_url());
+                values.put(COLUMN_MEDIA_TYPE, items.get(i).getMedia_type());
+                values.put(COLUMN_PREVIEW, items.get(i).getPreview());
+                values.put(COLUMN_MIME_TYPE, items.get(i).getMime_type());
+                values.put(COLUMN_MD5, items.get(i).getMd5());
+                values.put(COLUMN_PATH_TO_FILE, fileInstance.getPath());
+                try {
+                    database.replaceOrThrow(DB_TABLE, null, values);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                values.clear();
             }
-            values.clear();
         }
         values.put(COLUMN_PATH, fileInstance.getPath());
         values.put(COLUMN_TYPE, fileInstance.getType());
@@ -145,6 +146,7 @@ public class DB {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     /*public Cursor getAll() {
