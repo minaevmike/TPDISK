@@ -66,10 +66,10 @@ public class UrlService extends IntentService {
             final String action = intent.getAction();
             if (ACTION_GET_URI.equals(action)) {
                 final String url = intent.getStringExtra(PARAM_FOLDER);
-                handleGetFolder(url);
+                String folder = handleGetFolder(this, url);
                 Messenger messenger = (Messenger)intent.getExtras().get(PARAM_MESSENGER);
                 Message message = Message.obtain();
-                message.obj = "THIS IS WORKS";
+                message.obj = folder;
                 try {
                     messenger.send(message);
                 } catch (RemoteException e) {
@@ -93,9 +93,9 @@ public class UrlService extends IntentService {
         return map;
     }
 
-    private void handleGetFolder(String folder){
+    private String handleGetFolder(Context context, String folder){
         Processor processor = new Processor();
-        processor.getFileInstanseByPath(folder);
+        return processor.getFileInstanceByPath(context, folder);
     }
 
     private void handleActionGetUri(String url) {

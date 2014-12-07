@@ -40,8 +40,20 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
 
 
 
-    public void someMethod(){
-        Log.d(TAG, "I WAS CALLED");
+    public void putFilesOnScreen(String path){
+        DB db = new DB(this);
+        db.open();
+        FileInstance instance = db.getElemByPath(path);
+        Log.d(TAG, instance.toString());
+        db.close();
+        FolderList folderList = new FolderList();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(FolderList.FILES, instance);
+        folderList.setArguments(bundle);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.container, folderList);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,13 +138,13 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         Log.d(TAG, Credentials.getToken() == null ? "NO TOKEN" : Credentials.getToken());
 
 ////////////////////////////////////////////////////EXAMPLE 4 MIKE//////////////////////////////////////////////////
-        DB test_db = new DB(this);
+    /*    DB test_db = new DB(this);
         test_db.open();
         FileInstance test_fileInstace = new FileInstance();//1, "test","test","test","test","test","test","test","test","test","test","test","test", Embedded)
         test_fileInstace.setName("test");
         test_db.insertOrReplace(test_fileInstace);
         String temp = test_db.getElemByName("test").getName();
-        Log.d(TAG, "name" + temp);
+        Log.d(TAG, "name" + temp);*/
     }
 
     @Override

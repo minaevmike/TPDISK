@@ -40,16 +40,15 @@ import java.util.HashMap;
 public class FolderList extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     Toast toast;
     private SwipeRefreshLayout swipeRefreshLayout;
+    public static final String FILES = "FILES_LIST";
+
     public Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             MyActivity activity = (MyActivity)getActivity();
-            activity.someMethod();
+            activity.putFilesOnScreen(msg.obj.toString());
             Log.d("FOLDER_LIST", msg.obj.toString());
-            Toast
-                    .makeText(getActivity(), "Download complete!",
-                            Toast.LENGTH_LONG)
-                    .show();
+
         }
     };
 

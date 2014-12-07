@@ -1,9 +1,11 @@
 package com.example.mike.tpdisk.Service;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.example.mike.tpdisk.Connector;
 import com.example.mike.tpdisk.Credentials;
+import com.example.mike.tpdisk.DB.DB;
 import com.example.mike.tpdisk.FileInstance;
 import com.example.mike.tpdisk.JsonFileListParser;
 import com.example.mike.tpdisk.R;
@@ -18,7 +20,7 @@ import java.util.HashMap;
 public class Processor {
     private static final String TAG = "PROCESSOR";
     private static final String URL = "https://cloud-api.yandex.net:443/v1/disk/resources?path=";
-    public void getFileInstanseByPath(String path){
+    public String getFileInstanceByPath(Context context, String path){
         /*try {
             path = URLEncoder.encode(path, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -36,11 +38,14 @@ public class Processor {
         String answer = connector.getByUrl();
         if (answer == null){
             Log.d(TAG, "Answer is null");
-            return;
+            return null;
         }
         Log.d(TAG, answer);
         FileInstance instance = parser.parse(answer);
-
-        //TODO:insert instance to db
+        DB db = new DB(context);
+        db.open();
+        db.insertOrReplace(instance);
+        db.close();
+        return path;
     }
 }
