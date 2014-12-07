@@ -3,13 +3,18 @@ package com.example.mike.tpdisk;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mike.tpdisk.Service.UrlService;
 import com.example.mike.tpdisk.cache.ImageCache;
 
 import java.io.UnsupportedEncodingException;
@@ -31,9 +37,33 @@ import java.util.HashMap;
 /**
  * Created by Mike on 26.10.2014.
  */
-public class FolderList extends Fragment {
+public class FolderList extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     Toast toast;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    public Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            MyActivity activity = (MyActivity)getActivity();
+            activity.someMethod();
+            Log.d("FOLDER_LIST", msg.obj.toString());
+            Toast
+                    .makeText(getActivity(), "Download complete!",
+                            Toast.LENGTH_LONG)
+                    .show();
+        }
+    };
 
+    @Override
+    public void onRefresh(){
+        Toast.makeText(getActivity(), "I started", Toast.LENGTH_SHORT).show();
+        swipeRefreshLayout.setRefreshing(true);
+        swipeRefreshLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 3000);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("FolderList", "On CreateView");
@@ -46,10 +76,9 @@ public class FolderList extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setRetainInstance(true);
         Log.d("FolderList", "On View Created");
-
-
-
-
+        swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.swipe_color_1, R.color.swipe_color_2, R.color.swipe_color_3, R.color.swipe_color_4);
         FileInstance instance = (FileInstance) getArguments().getSerializable(UrlLoader.FILES);
         Embedded embedded = instance.getEmbedded();
         FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
@@ -75,8 +104,10 @@ public class FolderList extends Fragment {
                         e.printStackTrace();
                     }
                     if(file.isDirectory()) {
-                        UrlLoader urlLoader = new UrlLoader(getActivity());
-                        urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);
+                        ServiceHelper helper = new ServiceHelper();
+                        helper.getFilesInFolder(getActivity(), path);
+                        /*UrlLoader urlLoader = new UrlLoader(getActivity());
+                        urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);*/
                     }else {
                         (new AsyncDownloadFile()).execute(path, getActivity(), file.getName());
                     }
@@ -215,5 +246,16 @@ public class FolderList extends Fragment {
         }
         toast.show();
     }
+
+    public class ServiceHelper {
+        public void getFilesInFolder(Context context, String folder){
+            Intent mServiceIntent = new Intent(context, UrlService.class);
+            mServiceIntent.putExtra(UrlService.PARAM_FOLDER, folder);
+            mServiceIntent.setAction(UrlService.ACTION_GET_URI);
+            mServiceIntent.putExtra(UrlService.PARAM_MESSENGER, new Messenger(handler));
+            context.startService(mServiceIntent);
+        }
+    }
+
 
 }

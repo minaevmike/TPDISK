@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
+import com.example.mike.tpdisk.Service.UrlService;
 import com.example.mike.tpdisk.preferences.PreferencesActivity;
 
 public class MyActivity extends FragmentActivity implements DownloadStateReceiver.resultGetter /*implements LoaderManager.LoaderCallbacks<String> */{
@@ -37,6 +38,11 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
     private static int created = 0;
     private DownloadStateReceiver mDownloadStateReceiver;
 
+
+
+    public void someMethod(){
+        Log.d(TAG, "I WAS CALLED");
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -44,6 +50,7 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         setContentView(R.layout.activity_my);
         Utils utils = new Utils();
         String authToken = utils.getToken(this);
+
         // TODO: Fix expires
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();

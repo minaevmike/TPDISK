@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="splash_background">#f3f3f3</color>
+    <color name="swipe_color_1">#ff5ddb44</color>
+    <color name="swipe_color_2">#ff55ccc3</color>
+    <color name="swipe_color_3">#ff0079bd</color>
+    <color name="swipe_color_4">#ff2838af</color>
 </resources>
 

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.mike.tpdisk.Service.UrlService;
+
 public class DownloadStateReceiver extends BroadcastReceiver {
     private String TAG = "DownloadStateReceiver";
     resultGetter mParent;
