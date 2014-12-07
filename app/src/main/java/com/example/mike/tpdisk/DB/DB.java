@@ -186,13 +186,15 @@ public class DB {
             fileInstance.setName(cursor.getString(3));
             fileInstance.setModified(cursor.getString(4));
             fileInstance.setCreated(cursor.getString(5));
-            fileInstance.setCreated(cursor.getString(6));
-            fileInstance.setSize(cursor.getInt(7));
-            fileInstance.setPublic_key(cursor.getString(8));
-            fileInstance.setMedia_type(cursor.getString(9));
-            fileInstance.setPreview(cursor.getString(10));
-            fileInstance.setMime_type(cursor.getString(11));
-            fileInstance.setMd5(cursor.getString(12));
+            fileInstance.setSize(cursor.getInt(6));
+            fileInstance.setPublic_key(cursor.getString(7));
+            fileInstance.setOrigin_path(cursor.getString(8));
+            fileInstance.setPublic_url(cursor.getString(9));
+            fileInstance.setMedia_type(cursor.getString(10));
+            fileInstance.setPreview(cursor.getString(11));
+            fileInstance.setMime_type(cursor.getString(12));
+            fileInstance.setMd5(cursor.getString(13));
+
         }else{
             fileInstance.setSize(-1);
         }
@@ -203,18 +205,20 @@ public class DB {
             return fileInstance;
         }else{
             FileInstance temp = new FileInstance();
+
             temp.setPath(cursor.getString(1));
             temp.setType(cursor.getString(2));
             temp.setName(cursor.getString(3));
             temp.setModified(cursor.getString(4));
             temp.setCreated(cursor.getString(5));
-            temp.setCreated(cursor.getString(6));
-            temp.setSize(cursor.getInt(7));
-            temp.setPublic_key(cursor.getString(8));
-            temp.setMedia_type(cursor.getString(9));
-            temp.setPreview(cursor.getString(10));
-            temp.setMime_type(cursor.getString(11));
-            temp.setMd5(cursor.getString(12));
+            temp.setSize(cursor.getInt(6));
+            temp.setPublic_key(cursor.getString(7));
+            temp.setOrigin_path(cursor.getString(8));
+            temp.setPublic_url(cursor.getString(9));
+            temp.setMedia_type(cursor.getString(10));
+            temp.setPreview(cursor.getString(11));
+            temp.setMime_type(cursor.getString(12));
+            temp.setMd5(cursor.getString(13));
             items.add(temp);
         }
         while (cursor.moveToNext())
@@ -225,13 +229,14 @@ public class DB {
             temp.setName(cursor.getString(3));
             temp.setModified(cursor.getString(4));
             temp.setCreated(cursor.getString(5));
-            temp.setCreated(cursor.getString(6));
-            temp.setSize(cursor.getInt(7));
-            temp.setPublic_key(cursor.getString(8));
-            temp.setMedia_type(cursor.getString(9));
-            temp.setPreview(cursor.getString(10));
-            temp.setMime_type(cursor.getString(11));
-            temp.setMd5(cursor.getString(12));
+            temp.setSize(cursor.getInt(6));
+            temp.setPublic_key(cursor.getString(7));
+            temp.setOrigin_path(cursor.getString(8));
+            temp.setPublic_url(cursor.getString(9));
+            temp.setMedia_type(cursor.getString(10));
+            temp.setPreview(cursor.getString(11));
+            temp.setMime_type(cursor.getString(12));
+            temp.setMd5(cursor.getString(13));
             items.add(temp);
         }
         Embedded embedded = new Embedded();
@@ -251,13 +256,14 @@ public class DB {
             fileInstance.setName(cursor.getString(3));
             fileInstance.setModified(cursor.getString(4));
             fileInstance.setCreated(cursor.getString(5));
-            fileInstance.setCreated(cursor.getString(6));
-            fileInstance.setSize(cursor.getInt(7));
-            fileInstance.setPublic_key(cursor.getString(8));
-            fileInstance.setMedia_type(cursor.getString(9));
-            fileInstance.setPreview(cursor.getString(10));
-            fileInstance.setMime_type(cursor.getString(11));
-            fileInstance.setMd5(cursor.getString(12));
+            fileInstance.setSize(cursor.getInt(6));
+            fileInstance.setPublic_key(cursor.getString(7));
+            fileInstance.setOrigin_path(cursor.getString(8));
+            fileInstance.setPublic_url(cursor.getString(9));
+            fileInstance.setMedia_type(cursor.getString(10));
+            fileInstance.setPreview(cursor.getString(11));
+            fileInstance.setMime_type(cursor.getString(12));
+            fileInstance.setMd5(cursor.getString(13));
         }else{
             fileInstance.setSize(-1);
         }
@@ -273,13 +279,14 @@ public class DB {
             temp.setName(cursor.getString(3));
             temp.setModified(cursor.getString(4));
             temp.setCreated(cursor.getString(5));
-            temp.setCreated(cursor.getString(6));
-            temp.setSize(cursor.getInt(7));
-            temp.setPublic_key(cursor.getString(8));
-            temp.setMedia_type(cursor.getString(9));
-            temp.setPreview(cursor.getString(10));
-            temp.setMime_type(cursor.getString(11));
-            temp.setMd5(cursor.getString(12));
+            temp.setSize(cursor.getInt(6));
+            temp.setPublic_key(cursor.getString(7));
+            temp.setOrigin_path(cursor.getString(8));
+            temp.setPublic_url(cursor.getString(9));
+            temp.setMedia_type(cursor.getString(10));
+            temp.setPreview(cursor.getString(11));
+            temp.setMime_type(cursor.getString(12));
+            temp.setMd5(cursor.getString(13));
             items.add(temp);
         }
         while (cursor.moveToNext())
@@ -290,13 +297,14 @@ public class DB {
             temp.setName(cursor.getString(3));
             temp.setModified(cursor.getString(4));
             temp.setCreated(cursor.getString(5));
-            temp.setCreated(cursor.getString(6));
-            temp.setSize(cursor.getInt(7));
-            temp.setPublic_key(cursor.getString(8));
-            temp.setMedia_type(cursor.getString(9));
-            temp.setPreview(cursor.getString(10));
-            temp.setMime_type(cursor.getString(11));
-            temp.setMd5(cursor.getString(12));
+            temp.setSize(cursor.getInt(6));
+            temp.setPublic_key(cursor.getString(7));
+            temp.setOrigin_path(cursor.getString(8));
+            temp.setPublic_url(cursor.getString(9));
+            temp.setMedia_type(cursor.getString(10));
+            temp.setPreview(cursor.getString(11));
+            temp.setMime_type(cursor.getString(12));
+            temp.setMd5(cursor.getString(13));
             items.add(temp);
         }
         Embedded embedded = new Embedded();
