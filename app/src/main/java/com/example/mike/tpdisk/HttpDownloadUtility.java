@@ -75,6 +75,7 @@ public class HttpDownloadUtility {
         Bitmap bitmap=null;
         InputStream iStream = null;
         try{
+            Log.d("HTTPDOWNUT", strUrl);
             URL url = new URL(strUrl);
             /** Creating an http connection to communcate with url */
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

@@ -42,7 +42,8 @@ public class ImgHashDb {
         Log.d("DATABASE VALIDATE HASH QUERY", hash);
         String storedHash;
         try {
-            cursor.moveToFirst();
+            if(!cursor.moveToFirst())
+                return false;
             storedHash = cursor.getString(0);
         } catch (Exception e) {
             e.printStackTrace();

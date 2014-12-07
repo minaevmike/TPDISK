@@ -46,6 +46,6 @@ public class Processor {
         db.open();
         db.insertOrReplace(instance);
         db.close();
-        return path;
+        return instance.getPath();
     }
 }

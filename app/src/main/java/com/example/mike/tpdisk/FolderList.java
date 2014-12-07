@@ -41,6 +41,7 @@ public class FolderList extends Fragment implements SwipeRefreshLayout.OnRefresh
     Toast toast;
     private SwipeRefreshLayout swipeRefreshLayout;
     public static final String FILES = "FILES_LIST";
+    private static final String TAG = "FOLDER_LIST";
 
     public Handler handler = new Handler(){
         @Override
@@ -186,6 +187,9 @@ public class FolderList extends Fragment implements SwipeRefreshLayout.OnRefresh
 
         protected void onPostExecute(Bitmap result) {
             ((ImageView) view.findViewById(R.id.image)).setImageBitmap(result);
+            Log.d(TAG, instance.getNormalizedPath());
+            Log.d(TAG, instance.getMd5());
+            Log.d(TAG, result.toString());
             imageCache.cache(result, instance.getNormalizedPath(), instance.getMd5());
         }
     }

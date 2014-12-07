@@ -44,7 +44,6 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         DB db = new DB(this);
         db.open();
         FileInstance instance = db.getElemByPath(path);
-        Log.d(TAG, instance.toString());
         db.close();
         FolderList folderList = new FolderList();
         Bundle bundle = new Bundle();
