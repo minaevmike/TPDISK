@@ -11,5 +11,6 @@
     <string name="pref_cat_misc_title">Miscellaneous</string>
     <string name="preferences_activity">Preferences</string>
     <string name="pref_notify_download_key">pref_notify_download_start</string>
+    <string name="get_files">https://cloud-api.yandex.net:443/v1/disk/resources?path=</string>
 
 </resources>

@@ -59,6 +59,7 @@ public class SplashScreenActivity extends Activity {
             Log.d(TAG, result);
             JsonFileListParser parser = new JsonFileListParser();
             FileInstance instanse = parser.parse(result);
+            Log.d(TAG, instanse.toString());
             Intent i = new Intent(SplashScreenActivity.this,
                     MyActivity.class);
             i.putExtra(FILES_FROM_BEGIN, instanse);

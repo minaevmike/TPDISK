@@ -53,7 +53,7 @@
         </activity>
 
         <service
-            android:name=".UrlService"
+            android:name=".Service.UrlService"
             android:exported="false" >
         </service>
 

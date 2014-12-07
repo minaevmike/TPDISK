@@ -1,4 +1,4 @@
-package com.example.mike.tpdisk;
+package com.example.mike.tpdisk.Service;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -7,9 +7,15 @@ import android.content.Intent;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import com.example.mike.tpdisk.Credentials;
+import com.example.mike.tpdisk.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,6 +43,9 @@ public class UrlService extends IntentService {
 
     public static final String PARAM_URL = "com.example.mike.tpdisk.extra.PARAM_URL";
     public static final String PARAM_RESULT = "com.example.mike.tpdisk.extra.PARAM_RESULT";
+    public static final String PARAM_FOLDER = "com.example.mike.tpdisk.extra.PARAM_FOLDER";
+    public static final String PARAM_MESSENGER = "com.example.mike.tpdisk.extra.PARAM_MESSENGER";
+
     public static final String PROGRESS_RESULT = "com.example.mike.tpdisk.extra.PROGRESS_RESULT";
 
     // TODO: Customize helper method
@@ -56,8 +65,16 @@ public class UrlService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_GET_URI.equals(action)) {
-                final String url = intent.getStringExtra(PARAM_URL);
-                handleActionGetUri(url);
+                final String url = intent.getStringExtra(PARAM_FOLDER);
+                handleGetFolder(url);
+                Messenger messenger = (Messenger)intent.getExtras().get(PARAM_MESSENGER);
+                Message message = Message.obtain();
+                message.obj = "THIS IS WORKS";
+                try {
+                    messenger.send(message);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             } else {
                 throw new UnsupportedOperationException("Wrong intent action");
             }
@@ -75,6 +92,12 @@ public class UrlService extends IntentService {
         }
         return map;
     }
+
+    private void handleGetFolder(String folder){
+        Processor processor = new Processor();
+        processor.getFileInstanseByPath(folder);
+    }
+
     private void handleActionGetUri(String url) {
         Log.d(TAG, "handleActionGetUri");
         Log.d(TAG, hashCode() + " loadInBackground start");
