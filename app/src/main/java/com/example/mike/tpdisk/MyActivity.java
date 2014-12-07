@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
+import com.example.mike.tpdisk.DB.DB;
 import com.example.mike.tpdisk.preferences.PreferencesActivity;
 
 public class MyActivity extends FragmentActivity implements DownloadStateReceiver.resultGetter /*implements LoaderManager.LoaderCallbacks<String> */{
@@ -117,6 +119,15 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         }
 
         Log.d(TAG, Credentials.getToken() == null ? "NO TOKEN" : Credentials.getToken());
+
+////////////////////////////////////////////////////EXAMPLE 4 MIKE//////////////////////////////////////////////////
+        DB test_db = new DB(this);
+        test_db.open();
+        FileInstance test_fileInstace = new FileInstance();//1, "test","test","test","test","test","test","test","test","test","test","test","test", Embedded)
+        test_fileInstace.setName("test");
+        test_db.insertOrReplace(test_fileInstace);
+        String temp = test_db.getElemByName("test").getName();
+        Log.d(TAG, "name" + temp);
     }
 
     @Override
