@@ -2,6 +2,7 @@ package com.example.mike.tpdisk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 /**
@@ -24,5 +25,9 @@ public class Utils {
         editor.putString(TOKEN_NAME, token);
         editor.putInt(EXPIRSE_NAME, (int) System.currentTimeMillis() / 1000 + expires);
         editor.apply();
+    }
+
+    public String getStringFromCursor(Cursor c, String key){
+        return c.getString(c.getColumnIndexOrThrow(key));
     }
 }

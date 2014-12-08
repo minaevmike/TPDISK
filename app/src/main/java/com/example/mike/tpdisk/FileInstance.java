@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by Mike on 26.10.2014.
  */
 public class FileInstance implements Serializable{
-    private static final String DIR = "dir";
+    public static final String DIR = "dir";
 
     private int size;
     private String public_key;

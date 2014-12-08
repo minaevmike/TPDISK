@@ -2,6 +2,7 @@ package com.example.mike.tpdisk;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -9,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -40,7 +42,8 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
     private static int created = 0;
     private DownloadStateReceiver mDownloadStateReceiver;
     private SwipeRefreshLayout swipeRefreshLayout;
-
+    private static String curPage;
+    private DB db;
     @Override
     public void onRefresh(){
         Toast.makeText(this, "I started", Toast.LENGTH_SHORT).show();
@@ -56,17 +59,25 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
 
     public void putFilesOnScreen(String path){
         DB db = new DB(this);
-        db.open();
-        FileInstance instance = db.getElemByPath(path);
-        db.close();
+        //db.open();
+        //FileInstance instance = db.getElemByPath(path);
+        //db.close();
         FolderList folderList = new FolderList();
         Bundle bundle = new Bundle();
-        bundle.putSerializable(FolderList.FILES, instance);
+        bundle.putString(FolderList.PATH, path);
+        //bundle.putSerializable(FolderList.FILES, instance);
         folderList.setArguments(bundle);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.container, folderList);
+        transaction.add(R.id.container, folderList, path);
         transaction.addToBackStack(null);
         transaction.commit();
+        curPage = path;
+    }
+
+    public void setEnablesSwipe(boolean flag){
+        if (swipeRefreshLayout != null){
+            swipeRefreshLayout.setEnabled(flag);
+        }
     }
 
     @Override
@@ -75,6 +86,8 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         Utils utils = new Utils();
+        db = new DB(this);
+        db.open();
         String authToken = utils.getToken(this);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -92,14 +105,8 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         if (bundle != null && bundle.getSerializable(SplashScreenActivity.FILES_FROM_BEGIN) != null && created == 0){
             //created ++;
             Log.d(TAG, "NOT NULL");
-            FolderList folderList = new FolderList();
-            Bundle bundle1 = new Bundle();
-            bundle1.putSerializable(UrlLoader.FILES, bundle.getSerializable(SplashScreenActivity.FILES_FROM_BEGIN));
-            folderList.setArguments(bundle1);
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.container, folderList);
-            //transaction.addToBackStack(null);
-            transaction.commit();
+            String path = bundle.getString(SplashScreenActivity.FILES_FROM_BEGIN);
+            putFilesOnScreen(path);
             bundle.remove(SplashScreenActivity.FILES_FROM_BEGIN);
         }
         Log.d(TAG, authToken + " " + Integer.toString(utils.getExpires(this)));
@@ -152,20 +159,12 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         }
 
         Log.d(TAG, Credentials.getToken() == null ? "NO TOKEN" : Credentials.getToken());
-
-////////////////////////////////////////////////////EXAMPLE 4 MIKE//////////////////////////////////////////////////
-    /*    DB test_db = new DB(this);
-        test_db.open();
-        FileInstance test_fileInstace = new FileInstance();//1, "test","test","test","test","test","test","test","test","test","test","test","test", Embedded)
-        test_fileInstace.setName("test");
-        test_db.insertOrReplace(test_fileInstace);
-        String temp = test_db.getElemByName("test").getName();
-        Log.d(TAG, "name" + temp);*/
     }
 
     @Override
     protected void onDestroy(){
         Log.d(TAG, "onDestroy");
+        db.close();
         //urlLoader.hideDialog();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mDownloadStateReceiver);
         super.onDestroy();
@@ -195,6 +194,10 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
     @Override
     public void setResult(String result) {
         Log.d(TAG, result);
+    }
+
+    public DB getDb() {
+        return db;
     }
 
 
@@ -247,5 +250,6 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
                     .create();
         }
     };
+
 
 }

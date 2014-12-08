@@ -19,7 +19,7 @@ import java.util.HashMap;
  */
 public class Processor {
     private static final String TAG = "PROCESSOR";
-    private static final String URL = "https://cloud-api.yandex.net:443/v1/disk/resources?path=";
+    private static final String URL = "https://cloud-api.yandex.net:443/v1/disk/resources?limit=20&path=";
     public String getFileInstanceByPath(Context context, String path){
         /*try {
             path = URLEncoder.encode(path, "UTF-8");
@@ -37,7 +37,7 @@ public class Processor {
         connector.setUrl(url);
         String answer = connector.getByUrl();
         if (answer == null){
-            Log.d(TAG, "Answer is null");
+            Log.d(TAG, "Answer is null url: " + url);
             return null;
         }
         Log.d(TAG, answer);

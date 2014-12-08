@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -18,14 +20,29 @@ public class SplashScreenActivity extends Activity {
     private String TAG = "SplashAsync";
     private String token;
 
+    public Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            Intent i = new Intent(SplashScreenActivity.this,
+                    MyActivity.class);
+            i.putExtra(FILES_FROM_BEGIN, (String)msg.obj);
+            startActivity(i);
+            finish();
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         Utils utils = new Utils();
         token = utils.getToken(this);
-        if(token != null)
-            new BackgroundSplashTask().execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F");
+        if(token != null) {
+            Credentials.setToken(token);
+            ServiceHelper helper = new ServiceHelper();
+            helper.getFilesInFolder(this, "disk%3A%2F", handler);
+        }
         else {
             Intent i = new Intent(SplashScreenActivity.this,
                     MyActivity.class);

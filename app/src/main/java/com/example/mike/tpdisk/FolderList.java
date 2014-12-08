@@ -5,6 +5,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,18 +15,26 @@ import android.os.Message;
 import android.os.Messenger;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mike.tpdisk.DB.DB;
+import com.example.mike.tpdisk.Utils;
 import com.example.mike.tpdisk.Service.UrlService;
 import com.example.mike.tpdisk.cache.ImageCache;
 
@@ -37,10 +46,13 @@ import java.util.HashMap;
 /**
  * Created by Mike on 26.10.2014.
  */
-public class FolderList extends Fragment {
+public class FolderList extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     Toast toast;
     public static final String FILES = "FILES_LIST";
+    public static final String PATH = "PATH";
     private static final String TAG = "FOLDER_LIST";
+    SimpleCursorAdapter cursorAdapter;
+    private CustomCursorAdapter customCursorAdapter;
 
     public Handler handler = new Handler(){
         @Override
@@ -52,7 +64,6 @@ public class FolderList extends Fragment {
         }
     };
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("FolderList", "On CreateView");
@@ -62,110 +73,163 @@ public class FolderList extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        customCursorAdapter = new CustomCursorAdapter(getActivity(), null);
         super.onViewCreated(view, savedInstanceState);
         setRetainInstance(true);
         Log.d("FolderList", "On View Created");
-
-        FileInstance instance = (FileInstance) getArguments().getSerializable(UrlLoader.FILES);
-        Embedded embedded = instance.getEmbedded();
-        FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
-
+        String path = getArguments().getString(PATH);
+        //FileInstance instance = (FileInstance) getArguments().getSerializable(UrlLoader.FILES);
+        //Embedded embedded = instance.getEmbedded();
+        //FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
+        MyActivity activity = (MyActivity) getActivity();
+        Log.d(TAG, path);
+        final Cursor cursor = activity.getDb().getEByPath(path);
+        String [] colums = new String[]{
+            DB.COLUMN_NAME
+        };
+        int[] to = new int[]{
+                R.id.text
+        };
+        cursorAdapter = new SimpleCursorAdapter(getActivity(),
+                R.layout.file_list_item,
+                cursor,
+                colums,
+                to,
+                0);
+        customCursorAdapter.swapCursor(cursor);
         final ListView filesTable = (ListView) view.findViewById(R.id.files_list);
         filesTable.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                (new FileOperationsDialog(/*(FileInstance)adapterView.getItemAtPosition(pos)*/)).show(getFragmentManager(), getTag());
+                (new FileOperationsDialog()).show(getFragmentManager(), getTag());
                 // либо передавать файл параметром, либо сделать диалог внутренним классом для реализации функционала над файлами
                 return true;
+            }
+        });
+        filesTable.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+                MyActivity activity = (MyActivity)getActivity();
+                if (i == 0){
+                    activity.setEnablesSwipe(true);
+                }
+                else {
+                    activity.setEnablesSwipe(false);
+                }
             }
         });
         filesTable.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
-                FileInstance file = (FileInstance)adapterView.getItemAtPosition(pos);
-                if (file != null) {
-                    String path = null;
-                    try {
-                        path = URLEncoder.encode(file.getPath(), "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    if(file.isDirectory()) {
-                        ServiceHelper helper = new ServiceHelper();
-                        helper.getFilesInFolder(getActivity(), path);
-                        /*UrlLoader urlLoader = new UrlLoader(getActivity());
-                        urlLoader.execute("https://cloud-api.yandex.net:443/v1/disk/resources?path=" + path);*/
-                    }else {
-                        (new AsyncDownloadFile()).execute(path, getActivity(), file.getName());
-                    }
-
-                }else{
-                    Log.d("AA","no text view");
+                Cursor cursor1 = (Cursor)adapterView.getItemAtPosition(pos);//(Cursor) adapterView.getItemAtPosition(pos);
+                //Log.d(TAG, "!" + cursor1.getString(cursor1.getColumnIndexOrThrow(DB.COLUMN_PREVIEW)) + "!");
+                String path = cursor1.getString(cursor1.getColumnIndexOrThrow(DB.COLUMN_PATH));
+                String type = cursor1.getString(cursor1.getColumnIndexOrThrow(DB.COLUMN_TYPE));
+                String name = cursor1.getString(cursor1.getColumnIndexOrThrow(DB.COLUMN_NAME));
+                try {
+                    path = URLEncoder.encode(path, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                if (type.equals(FileInstance.DIR)){
+                    ServiceHelper helper = new ServiceHelper();
+                    helper.getFilesInFolder(getActivity(), path, handler);
+                }
+                else {
+                    (new AsyncDownloadFile()).execute(path, getActivity(), name);
                 }
             }
         });
 
-        filesTable.setAdapter(adapter);
+        filesTable.setAdapter(customCursorAdapter);
     }
 
-    private class FileAdapter extends ArrayAdapter<FileInstance> {
-        public FileAdapter(FileInstance[] objects) {
-            super(getActivity(), 0, objects);
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+
+    }
+
+    private class CustomCursorAdapter extends CursorAdapter{
+
+        private Context context;
+        private int selectedPosition;
+        LayoutInflater layoutInflater;
+
+        public CustomCursorAdapter(Context context, Cursor c){
+            super(context, c, 0);
+            layoutInflater = LayoutInflater.from(context);
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.file_list_item, parent, false);
+        public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+            View v = layoutInflater.inflate(R.layout.file_list_item, viewGroup, false);
+            return v;
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            TextView textView = (TextView)view.findViewById(R.id.text);
+            textView.setText(cursor.getString(cursor.getColumnIndexOrThrow(DB.COLUMN_NAME)));
+            setAndCachePreview(cursor, view);
+        }
+
+        private void setAndCachePreview(Cursor c, View convertView) {
+            Utils u = new Utils();
+            boolean is_dir = u.getStringFromCursor(c, DB.COLUMN_TYPE).equals(FileInstance.DIR);
+            String preview = u.getStringFromCursor(c, DB.COLUMN_PREVIEW);//c.getString(c.getColumnIndexOrThrow(DB.COLUMN_PREVIEW));
+            String md5 = u.getStringFromCursor(c, DB.COLUMN_MD5);// c.getString(c.getColumnIndexOrThrow(DB.COLUMN_MD5));
+            String path = u.getStringFromCursor(c, DB.COLUMN_PATH);
+            String norm_path = path.split(":/")[1];
+            if(is_dir) {
+                ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.folder);
+            } else {
+                ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.default_ico);
             }
-            FileInstance instance = getItem(position);
-
-            if (instance != null) {
-
-                TextView name = (TextView) convertView.findViewById(R.id.text);
-
-                if (name != null) {
-                    name.setText(instance.getName());
-                    name.setTag(instance);
-                    setAndCachePreview(instance, convertView);
+            if(preview != null && !preview.equals("")) {
+                ImageCache cache = new ImageCache(getActivity());
+                if(cache.isCached(norm_path, md5)) {
+                    ((ImageView) convertView.findViewById(R.id.image)).setImageBitmap(cache.getPreview(norm_path));
+                    Log.d("CACHE", "WAS CACHED!!!");
+                } else {
+                    new PreviewDownloader().execute(convertView, cache, preview, md5, norm_path);
+                    Log.d("CACHE", "DOWNLOAD!!!");
                 }
             }
-            return convertView;
         }
     }
-
-    private void setAndCachePreview(FileInstance instance, View convertView) {
-        if(instance.isDirectory()) {
-            ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.folder);
-        } else {
-            ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.default_ico);
-        }
-        if(instance.hasPreview()) {
-            ImageCache cache = new ImageCache(getActivity());
-            if(cache.isCached(instance.getNormalizedPath(), instance.getMd5())) {
-                ((ImageView) convertView.findViewById(R.id.image)).setImageBitmap(cache.getPreview(instance.getNormalizedPath()));
-                Log.d("CACHE", "WAS CACHED!!!");
-            } else {
-                new PreviewDownloader().execute(convertView, instance, cache);
-                Log.d("CACHE", "DOWNLOAD!!!");
-            }
-        }
-    }
-
 
     public class PreviewDownloader extends AsyncTask<Object, Void, Bitmap> {
-        FileInstance instance = null;
+        //FileInstance instance = null;
         View view = null;
         ImageCache imageCache = null;
+        String md5;
+        String preview;
+        String norm_path;
         @Override
         protected Bitmap doInBackground(Object[] params) {
             view = (View) params[0];
-            instance = (FileInstance) params[1];
-            imageCache = (ImageCache) params[2];
+            imageCache = (ImageCache) params[1];
+            preview = (String) params[2];
+            md5 = (String) params[3];
+            norm_path = (String) params[4];
 
             Bitmap bitmap = null;
             try {
-                bitmap = HttpDownloadUtility.bitmapDownloadUrl(instance.getPreview());
+                bitmap = HttpDownloadUtility.bitmapDownloadUrl(preview);
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());
             }
@@ -174,10 +238,7 @@ public class FolderList extends Fragment {
 
         protected void onPostExecute(Bitmap result) {
             ((ImageView) view.findViewById(R.id.image)).setImageBitmap(result);
-            Log.d(TAG, instance.getNormalizedPath());
-            Log.d(TAG, instance.getMd5());
-            Log.d(TAG, result.toString());
-            imageCache.cache(result, instance.getNormalizedPath(), instance.getMd5());
+            imageCache.cache(result, norm_path, md5);
         }
     }
 
@@ -237,15 +298,20 @@ public class FolderList extends Fragment {
         toast.show();
     }
 
-    public class ServiceHelper {
-        public void getFilesInFolder(Context context, String folder){
-            Intent mServiceIntent = new Intent(context, UrlService.class);
-            mServiceIntent.putExtra(UrlService.PARAM_FOLDER, folder);
-            mServiceIntent.setAction(UrlService.ACTION_GET_URI);
-            mServiceIntent.putExtra(UrlService.PARAM_MESSENGER, new Messenger(handler));
-            context.startService(mServiceIntent);
+    static class BestCursorLoader extends CursorLoader {
+        DB db;
+        String path;
+        public BestCursorLoader(Context context, DB db, String path) {
+            super(context);
+            this.path = path;
+            this.db = db;
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            Cursor cursor = this.db.getEByPath(this.path);
+            return cursor;
         }
     }
-
 
 }

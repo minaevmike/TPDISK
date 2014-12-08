@@ -236,7 +236,11 @@ public class DB {
         fileInstance.setEmbedded(embedded);
         return fileInstance;
     }
-
+    public Cursor getEByPath(String path){
+        String[] Path= new String[]{path};
+        Cursor cursor = database.query(DB_TABLE, null, COLUMN_PATH_TO_FILE + " = ?", Path, null, null,null,null);
+        return cursor;
+    }
     public FileInstance getElemByPath(String Path) {
         FileInstance fileInstance = new FileInstance();
         String[] names= new String[]{Path};

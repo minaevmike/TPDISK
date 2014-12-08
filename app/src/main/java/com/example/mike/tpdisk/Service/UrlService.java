@@ -80,6 +80,7 @@ public class UrlService extends IntentService {
             }
         }
     }
+
     public static Map<String, String> getQueryMap(String query)
     {
         String[] params = query.split("&");
