@@ -87,21 +87,6 @@ public class DB {
     }
 
     public void insertOrReplace(FileInstance fileInstance){
-        /*final String RAW =
-            "REPLACE INTO" + DB_TABLE + "(" +COLUMN_PATH + "," + COLUMN_TYPE+ "," + COLUMN_NAME+ "," + COLUMN_MODIFIED+ "," +
-                COLUMN_CREATED+ "," + COLUMN_SIZE+ "," + COLUMN_PUBLIC_KEY+ "," + COLUMN_ORIG_PATH+ "," + COLUMN_PUBLIC_URL+ "," +
-                "," + COLUMN_MEDIA_TYPE+ "," + COLUMN_PREVIEW+ "," + /*COLUMN_PREVIEW_LOCAL+ "," +*//* COLUMN_MIME_TYPE+ "," + COLUMN_MD5 + ")" + "VALUES ( " +
-                "'" + fileInstance.getPath() + "','" + fileInstance.getType() + "','" + fileInstance.getName() + "','" + fileInstance.getModified() + "','" + fileInstance.getCreated() +
-                "','" + fileInstance.getSize() + "','" + fileInstance.getPublic_key() + "','" + fileInstance.getOrigin_path() + "','" + fileInstance.getPublic_url() + "','" +
-                fileInstance.getMedia_type() + "','" + fileInstance.getPreview() + "','" + /*fileInstance.getp + "','" + *//*fileInstance.getMime_type() + "','" +  fileInstance.getMd5() + "');";
-        Log.d("sdasdfasdf", RAW);
-
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        try {
-            db.compileStatement(RAW).execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         ContentValues values = new ContentValues();
         if(fileInstance.getEmbedded().getItems() != null) {
             ArrayList<FileInstance> items = fileInstance.getEmbedded().getItems();
@@ -152,6 +137,12 @@ public class DB {
     /*public Cursor getAll() {
         return database.query(DB_TABLE, null,null, null, null, null, null);
     }*/
+
+    public int deleteByPath(String Path){
+
+        String[] Paths= new String[]{Path};
+        return database.delete(DB_TABLE, COLUMN_PATH_TO_FILE + " = ?", Paths);
+    }
 
     public void insertOrReplacePathUrl(String Path, String URL)
     {
