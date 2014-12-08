@@ -54,9 +54,9 @@ public class DB {
                     COLUMN_PUBLIC_URL + " text," +
                     COLUMN_MEDIA_TYPE + " text," +
                     COLUMN_PREVIEW + " text," +
-                    COLUMN_PATH_TO_FILE + " text," +
                     COLUMN_MIME_TYPE + " text," +
-                    COLUMN_MD5 + " text" +
+                    COLUMN_MD5 + " text," +
+                    COLUMN_PATH_TO_FILE + " text" +
                     ");";
 
     public static final String DB_CREATE_FILE_URL =
