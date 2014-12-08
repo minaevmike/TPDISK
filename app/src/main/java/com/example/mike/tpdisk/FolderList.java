@@ -37,9 +37,8 @@ import java.util.HashMap;
 /**
  * Created by Mike on 26.10.2014.
  */
-public class FolderList extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class FolderList extends Fragment {
     Toast toast;
-    private SwipeRefreshLayout swipeRefreshLayout;
     public static final String FILES = "FILES_LIST";
     private static final String TAG = "FOLDER_LIST";
 
@@ -53,17 +52,7 @@ public class FolderList extends Fragment implements SwipeRefreshLayout.OnRefresh
         }
     };
 
-    @Override
-    public void onRefresh(){
-        Toast.makeText(getActivity(), "I started", Toast.LENGTH_SHORT).show();
-        swipeRefreshLayout.setRefreshing(true);
-        swipeRefreshLayout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }, 3000);
-    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("FolderList", "On CreateView");
@@ -76,9 +65,7 @@ public class FolderList extends Fragment implements SwipeRefreshLayout.OnRefresh
         super.onViewCreated(view, savedInstanceState);
         setRetainInstance(true);
         Log.d("FolderList", "On View Created");
-        swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.refresh);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeResources(R.color.swipe_color_1, R.color.swipe_color_2, R.color.swipe_color_3, R.color.swipe_color_4);
+
         FileInstance instance = (FileInstance) getArguments().getSerializable(UrlLoader.FILES);
         Embedded embedded = instance.getEmbedded();
         FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));

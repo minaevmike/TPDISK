@@ -11,15 +11,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
 
 import com.example.mike.tpdisk.Service.UrlService;import com.example.mike.tpdisk.DB.DB;import com.example.mike.tpdisk.preferences.PreferencesActivity;
 
-public class MyActivity extends FragmentActivity implements DownloadStateReceiver.resultGetter /*implements LoaderManager.LoaderCallbacks<String> */{
+public class MyActivity extends FragmentActivity implements DownloadStateReceiver.resultGetter, SwipeRefreshLayout.OnRefreshListener /*implements LoaderManager.LoaderCallbacks<String> */{
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
 
     private String TAG = "MainActivity";
@@ -37,7 +39,19 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
     public static UrlLoader urlLoader = null;
     private static int created = 0;
     private DownloadStateReceiver mDownloadStateReceiver;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
+    @Override
+    public void onRefresh(){
+        Toast.makeText(this, "I started", Toast.LENGTH_SHORT).show();
+        swipeRefreshLayout.setRefreshing(true);
+        swipeRefreshLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 3000);
+    }
 
 
     public void putFilesOnScreen(String path){
@@ -54,6 +68,7 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -61,7 +76,9 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         setContentView(R.layout.activity_my);
         Utils utils = new Utils();
         String authToken = utils.getToken(this);
-
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.swipe_color_1, R.color.swipe_color_2, R.color.swipe_color_3, R.color.swipe_color_4);
         // TODO: Fix expires
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
