@@ -21,6 +21,7 @@ public class DB {
     private static final int DB_VERSION = 1;
     private static final String DB_TABLE = "downloaded";
     private static final String DB_TABLE_FILE_URL = "file_url";
+    private static final String DB_TABLE_TIME_URL = "time_url";
 
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_PATH = "path";
@@ -38,7 +39,7 @@ public class DB {
     public static final String COLUMN_MIME_TYPE = "mime_type";
     public static final String COLUMN_MD5 = "md5";
     public static final String COLUMN_FILE_URL_URL = "url";
-    public static final String COLUMN_FILE_URL_PATH = "path";
+    public static final String COLUMN_FILE_TIME_TIME = "time";
     public static final String COLUMN_PATH_PREVIEW_SAVED = "path_preview_saved";
 
     public static final String DB_CREATE =
@@ -65,8 +66,15 @@ public class DB {
            "create table " + DB_TABLE_FILE_URL + " (" +
                    COLUMN_ID + " integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                    COLUMN_FILE_URL_URL + " text," +
-                   COLUMN_FILE_URL_PATH + " text UNIQUE" +
+                   COLUMN_PATH + " text UNIQUE" +
                    ");";
+
+    public static final String DB_CREATE_TIME_URL =
+            "create table " + DB_TABLE_TIME_URL + " (" +
+                    COLUMN_ID + " integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_FILE_TIME_TIME + " integer," +
+                    COLUMN_PATH + " text UNIQUE" +
+                    ");";
 
     private static Context context;
 
@@ -159,7 +167,7 @@ public class DB {
     {
         ContentValues values = new ContentValues();
         values.put(COLUMN_FILE_URL_URL, URL);
-        values.put(COLUMN_FILE_URL_PATH, Path);
+        values.put(COLUMN_PATH, Path);
         try {
             database.replaceOrThrow(DB_TABLE_FILE_URL, null, values);
         } catch (Exception e) {
@@ -169,7 +177,7 @@ public class DB {
 
     public String getUrl(String Path){
         String[] Paths= new String[]{Path};
-        Cursor cursor = database.query(DB_TABLE_FILE_URL, null, COLUMN_FILE_URL_PATH + " = ?", Paths, null, null,null,null);
+        Cursor cursor = database.query(DB_TABLE_FILE_URL, null, COLUMN_PATH + " = ?", Paths, null, null,null,null);
         if(cursor.moveToFirst())
         {
             return cursor.getString(1);
@@ -254,6 +262,31 @@ public class DB {
         Log.d("DB Count", Integer.toString(cursor.getCount()));
         return cursor;
     }
+
+    public long getMSecPath(String path){
+        String[] names= new String[]{path};
+        Cursor cursor = database.query(DB_TABLE_TIME_URL, null, COLUMN_PATH + " = ?", names, null, null,null,null);
+        return cursor.getLong(1);
+    }
+
+    public void insertMSecPath(String path){
+        long time = System.currentTimeMillis();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_FILE_TIME_TIME, time);
+        values.put(COLUMN_PATH, path);
+        try {
+            database.replaceOrThrow(DB_TABLE_TIME_URL, null, values);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearBase(){
+        database.delete(DB_TABLE,null,null);
+        database.delete(DB_TABLE_TIME_URL,null,null);
+        database.delete(DB_CREATE_FILE_URL,null,null);
+    }
+
     public FileInstance getElemByPath(String Path) {
         FileInstance fileInstance = new FileInstance();
         String[] names= new String[]{Path};
@@ -332,6 +365,8 @@ public class DB {
             Log.d("SQLiteDatabaseOnCreate", DB_CREATE);
             sqLiteDatabase.execSQL(DB_CREATE);
             sqLiteDatabase.execSQL(DB_CREATE_FILE_URL);
+            sqLiteDatabase.execSQL(DB_CREATE_TIME_URL);
+
         }
 
         @Override
