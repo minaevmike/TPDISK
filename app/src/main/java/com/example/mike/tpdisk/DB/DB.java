@@ -144,13 +144,13 @@ public class DB {
         values.put(COLUMN_MEDIA_TYPE, fileInstance.getMedia_type());
         values.put(COLUMN_PREVIEW, fileInstance.getPreview());
         values.put(COLUMN_MIME_TYPE, fileInstance.getMime_type());
-        values.put(COLUMN_MD5, fileInstance.getMd5());*/
+        values.put(COLUMN_MD5, fileInstance.getMd5());
         Log.d("Inserting", fileInstance.getPath());
         try {
             database.replaceOrThrow(DB_TABLE, null, values);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 

@@ -5,5 +5,9 @@
     <color name="swipe_color_2">#ff55ccc3</color>
     <color name="swipe_color_3">#ff0079bd</color>
     <color name="swipe_color_4">#ff2838af</color>
+    <color name="action_bar_text">#ff1f1f1f</color>
+    <color name="action_bar">#ffffca39</color>
+    <color name="action_bar_dark">#ffdda838</color>
+
 </resources>
 

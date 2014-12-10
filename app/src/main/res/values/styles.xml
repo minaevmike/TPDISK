@@ -1,8 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <!-- the theme applied to the application or activity -->
+    <style name="CustomActionBarTheme"
+        parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
     </style>
 
+    <!-- ActionBar styles -->
+    <style name="MyActionBar"
+        parent="@android:style/Theme.Material">
+        <item name="android:background">@color/action_bar</item>
+        <item name="android:icon">@android:color/transparent</item>
+        <item name="android:titleTextStyle">@style/TitleBarTextColor</item>
+        <item name="android:colorPrimary">#ff3d00</item>
+        <item name="android:colorPrimaryDark">#dd2c00</item>
+        <item name="android:colorAccent">#ff3d00</item>
+        <item name="android:textColorPrimary">@color/action_bar_text</item>
+    </style>
+    <style name="TitleBarTextColor" >
+        <item name="android:textColor">@color/action_bar_text</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="AppTheme" parent="android:Theme.Material">
+        <item name="android:textColorPrimary">@color/action_bar_text</item>
+        <!-- Main theme colors -->
+        <!--   your app branding color for the app bar -->
+        <item name="android:colorPrimary">@color/action_bar</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="android:colorPrimaryDark">@color/action_bar_dark</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="android:colorAccent">#ff3d00</item>
+    </style>
 </resources>

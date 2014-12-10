@@ -95,12 +95,12 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         db.open();
         //////////////////////////////////////
 
-        Log.d(TAG,"!!!!!!!TIME1   " +  String.valueOf(System.currentTimeMillis()));
-        db.insertMSecPath("test");
+        //Log.d(TAG,"!!!!!!!TIME1   " +  String.valueOf(System.currentTimeMillis()));
+       // db.insertMSecPath("test");
 
-        Log.d(TAG,"!!!!!!!TIME2   " +  String.valueOf(db.getMSecPath("test")));
+        //Log.d(TAG,"!!!!!!!TIME2   " +  String.valueOf(db.getMSecPath("test")));
 
-        db.clearBase();
+        //db.clearBase();
         /////////////////////////////////////////////
         String authToken = utils.getToken(this);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);

@@ -19,7 +19,7 @@ import java.util.HashMap;
  */
 public class Processor {
     private static final String TAG = "PROCESSOR";
-    private static final String URL = "https://cloud-api.yandex.net:443/v1/disk/resources?limit=1000&path=";
+    private static final String URL = "https://cloud-api.yandex.net:443/v1/disk/resources?limit=10&path=";
     public String getFileInstanceByPath(Context context, String path){
         /*try {
             path = URLEncoder.encode(path, "UTF-8");
