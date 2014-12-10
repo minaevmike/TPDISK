@@ -12,5 +12,6 @@
     <string name="preferences_activity">Preferences</string>
     <string name="pref_notify_download_key">pref_notify_download_start</string>
     <string name="get_files">https://cloud-api.yandex.net:443/v1/disk/resources?path=</string>
+    <string name="search">Search</string>
 
 </resources>

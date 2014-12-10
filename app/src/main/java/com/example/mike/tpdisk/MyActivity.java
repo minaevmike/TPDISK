@@ -2,6 +2,7 @@ package com.example.mike.tpdisk;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -19,6 +21,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.mike.tpdisk.Service.UrlService;import com.example.mike.tpdisk.DB.DB;import com.example.mike.tpdisk.preferences.PreferencesActivity;
@@ -179,6 +183,35 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.my, menu);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
+            SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+            SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
+            int searchImgId = getResources().getIdentifier("android:id/search_button", null, null);
+            ImageView v = (ImageView) search.findViewById(searchImgId);
+            //v.setImageResource(R.drawable.ic_action_search);
+            search.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
+
+            search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    Log.d(TAG + " SEARCH", s);
+                    return false;
+                }
+                @Override
+                public boolean onQueryTextChange(String query) {
+
+                    Log.d(TAG + " SEARCH", query);
+
+                    return true;
+
+                }
+
+            });
+
+        }
         return true;
     }
 

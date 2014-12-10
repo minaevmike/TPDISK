@@ -21,8 +21,8 @@
         <item name="android:textColor">@color/action_bar_text</item>
         <item name="android:textSize">20sp</item>
     </style>
-    <style name="AppTheme" parent="android:Theme.Material">
-        <item name="android:textColorPrimary">@color/action_bar_text</item>
+    <style name="AppTheme" parent="android:Theme.Material.Light">
+        <item name="android:searchIcon">@drawable/folder</item>
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
         <item name="android:colorPrimary">@color/action_bar</item>
