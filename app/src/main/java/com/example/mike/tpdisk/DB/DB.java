@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -266,7 +267,10 @@ public class DB {
     public long getMSecPath(String path){
         String[] names= new String[]{path};
         Cursor cursor = database.query(DB_TABLE_TIME_URL, null, COLUMN_PATH + " = ?", names, null, null,null,null);
-        return cursor.getLong(1);
+        if (cursor.moveToFirst())
+            return cursor.getLong(1);
+        else
+            return -1;
     }
 
     public void insertMSecPath(String path){
@@ -282,15 +286,21 @@ public class DB {
     }
 
     public void clearBase(){
-        database.delete(DB_TABLE,null,null);
-        database.delete(DB_TABLE_TIME_URL,null,null);
-        database.delete(DB_CREATE_FILE_URL,null,null);
+        try {
+            database.delete(DB_TABLE, null, null);
+            database.delete(DB_TABLE_TIME_URL, null, null);
+            database.delete(DB_TABLE_TIME_URL, null, null);
+        }
+        catch (SQLiteException e){
+            e.printStackTrace();
+        }
+
     }
 
     public FileInstance getElemByPath(String Path) {
         FileInstance fileInstance = new FileInstance();
         String[] names= new String[]{Path};
-        Cursor cursor = database.query(DB_TABLE, null, COLUMN_PATH + " = ?", names, null, null,null,null);
+        Cursor cursor = database.query(DB_TABLE, null, COLUMN_PATH + " = ?", names, null, null, null, null);
         if(cursor.moveToFirst()) {
             fileInstance.setPath(cursor.getString(1));
             fileInstance.setType(cursor.getString(2));

@@ -153,7 +153,6 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        cursor.moveToFirst();
         customCursorAdapter.swapCursor(cursor);
     }
 
