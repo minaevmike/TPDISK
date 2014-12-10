@@ -58,7 +58,7 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
 
 
     public void putFilesOnScreen(String path){
-        DB db = new DB(this);
+        //DB db = new DB(this);
         //db.open();
         //FileInstance instance = db.getElemByPath(path);
         //db.close();
@@ -80,6 +80,11 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         }
     }
 
+    public void setRefreshing(boolean flag){
+        if(swipeRefreshLayout != null){
+            swipeRefreshLayout.setRefreshing(flag);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -134,20 +139,11 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         else {
             Credentials.setToken(authToken);
         }
-        /*Loader<String> loader= getLoaderManager().getLoader(1);
-        if (loader != null){
-            Log.d(TAG, "Not null");
-            if(loader.isStarted()) {
-                Log.d(TAG, "Started");
-            }
-        }*/
 
         IntentFilter mStatusIntentFilter = new IntentFilter(UrlService.ACTION_SEND_RESULT);
-        //mStatusIntentFilter.addDataScheme("http");
-        // Instantiates a new DownloadStateReceiver
+
 
         mDownloadStateReceiver = new DownloadStateReceiver(this);
-        // Registers the DownloadStateReceiver and its intent filters
         LocalBroadcastManager.getInstance(this).registerReceiver(mDownloadStateReceiver, mStatusIntentFilter);
 
 
@@ -164,7 +160,7 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
     @Override
     protected void onDestroy(){
         Log.d(TAG, "onDestroy");
-        db.close();
+        //db.close();
         //urlLoader.hideDialog();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mDownloadStateReceiver);
         super.onDestroy();

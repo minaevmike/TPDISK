@@ -39,13 +39,14 @@ public class DB {
     public static final String COLUMN_MD5 = "md5";
     public static final String COLUMN_FILE_URL_URL = "url";
     public static final String COLUMN_FILE_URL_PATH = "path";
+    public static final String COLUMN_PATH_PREVIEW_SAVED = "path_preview_saved";
 
     public static final String DB_CREATE =
             "create table " + DB_TABLE + " (" +
                     COLUMN_ID + " integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_PATH + " text UNIQUE," +
                     COLUMN_TYPE + " text," +
-                    COLUMN_NAME + " text UNIQUE," +
+                    COLUMN_NAME + " text," +
                     COLUMN_MODIFIED + " text," +
                     COLUMN_CREATED + " text," +
                     COLUMN_SIZE + " text," +
@@ -56,7 +57,8 @@ public class DB {
                     COLUMN_PREVIEW + " text," +
                     COLUMN_MIME_TYPE + " text," +
                     COLUMN_MD5 + " text," +
-                    COLUMN_PATH_TO_FILE + " text" +
+                    COLUMN_PATH_TO_FILE + " text," +
+                    COLUMN_PATH_PREVIEW_SAVED + " text" +
                     ");";
 
     public static final String DB_CREATE_FILE_URL =
@@ -86,6 +88,12 @@ public class DB {
         }
     }
 
+    public void setPathToFile(String md5, String path){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_PATH_PREVIEW_SAVED, path);
+        database.update(DB_TABLE, contentValues, COLUMN_MD5 + "= ?", new String[]{md5});
+    }
+
     public void insertOrReplace(FileInstance fileInstance){
         ContentValues values = new ContentValues();
         if(fileInstance.getEmbedded().getItems() != null) {
@@ -105,6 +113,8 @@ public class DB {
                 values.put(COLUMN_MIME_TYPE, items.get(i).getMime_type());
                 values.put(COLUMN_MD5, items.get(i).getMd5());
                 values.put(COLUMN_PATH_TO_FILE, fileInstance.getPath());
+                values.put(COLUMN_PATH_PREVIEW_SAVED, "");
+                Log.d("Inserting", items.get(i).getPath());
                 try {
                     database.replaceOrThrow(DB_TABLE, null, values);
                 } catch (Exception e) {
@@ -113,7 +123,7 @@ public class DB {
                 values.clear();
             }
         }
-        values.put(COLUMN_PATH, fileInstance.getPath());
+        /*values.put(COLUMN_PATH, fileInstance.getPath());
         values.put(COLUMN_TYPE, fileInstance.getType());
         values.put(COLUMN_NAME, fileInstance.getName());
         values.put(COLUMN_MODIFIED, fileInstance.getModified());
@@ -125,7 +135,8 @@ public class DB {
         values.put(COLUMN_MEDIA_TYPE, fileInstance.getMedia_type());
         values.put(COLUMN_PREVIEW, fileInstance.getPreview());
         values.put(COLUMN_MIME_TYPE, fileInstance.getMime_type());
-        values.put(COLUMN_MD5, fileInstance.getMd5());
+        values.put(COLUMN_MD5, fileInstance.getMd5());*/
+        Log.d("Inserting", fileInstance.getPath());
         try {
             database.replaceOrThrow(DB_TABLE, null, values);
         } catch (Exception e) {
@@ -237,8 +248,10 @@ public class DB {
         return fileInstance;
     }
     public Cursor getEByPath(String path){
+        Log.d("DB", path);
         String[] Path= new String[]{path};
         Cursor cursor = database.query(DB_TABLE, null, COLUMN_PATH_TO_FILE + " = ?", Path, null, null,null,null);
+        Log.d("DB Count", Integer.toString(cursor.getCount()));
         return cursor;
     }
     public FileInstance getElemByPath(String Path) {

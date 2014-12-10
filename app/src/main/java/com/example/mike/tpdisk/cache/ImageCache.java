@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 
+import com.example.mike.tpdisk.DB.DB;
+import com.example.mike.tpdisk.MyActivity;
 import com.example.mike.tpdisk.cache.db.ImgHashDb;
 
 import java.io.File;
@@ -22,19 +24,20 @@ public class ImageCache {
     private static final File ROOT = Environment.getExternalStorageDirectory();
     private static final File CACHE_FOLDER = new File(ROOT, "tpyadisk_cache");
 
-    private final ImgHashDb imgHashDb;
-
+    //private final ImgHashDb imgHashDb;
+    private final DB db;
     public ImageCache(Context context) {
         if(!CACHE_FOLDER.exists()) {
             //noinspection ResultOfMethodCallIgnored
             CACHE_FOLDER.mkdir();
         }
-        imgHashDb = new ImgHashDb(context);
+        MyActivity activity = (MyActivity) context;
+        db = activity.getDb();
+        //imgHashDb = new ImgHashDb(context);
     }
 
-    public boolean isCached(String path, String hash) {
-        return (new File(CACHE_FOLDER + File.separator + path)).exists() &&
-                imgHashDb.validateHash(path, hash);
+    public boolean isCached(String path) {
+        return (new File(CACHE_FOLDER + File.separator + path)).exists();
     }
 
     public Bitmap getPreview(String path) {
@@ -66,6 +69,7 @@ public class ImageCache {
                 e.printStackTrace();
             }
         }
-        imgHashDb.addOrUpdateHash_RAW(path, hash);
+        db.setPathToFile(hash, path);
+        //imgHashDb.addOrUpdateHash_RAW(path, hash);
     }
 }

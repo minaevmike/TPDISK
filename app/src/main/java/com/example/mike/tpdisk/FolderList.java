@@ -53,6 +53,8 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
     private static final String TAG = "FOLDER_LIST";
     SimpleCursorAdapter cursorAdapter;
     private CustomCursorAdapter customCursorAdapter;
+    private DB db;
+    private static int i = 0;
 
     public Handler handler = new Handler(){
         @Override
@@ -78,25 +80,20 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
         setRetainInstance(true);
         Log.d("FolderList", "On View Created");
         String path = getArguments().getString(PATH);
+        Log.d(TAG, path);
+        Bundle bundle = new Bundle();
+        bundle.putString(PATH, path);
+        getActivity().getSupportLoaderManager().initLoader(i, bundle, this);
+        getActivity().getSupportLoaderManager().getLoader(i).forceLoad();
+        i++;
         //FileInstance instance = (FileInstance) getArguments().getSerializable(UrlLoader.FILES);
         //Embedded embedded = instance.getEmbedded();
         //FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
-        MyActivity activity = (MyActivity) getActivity();
+        //MyActivity activity = (MyActivity) getActivity();
         Log.d(TAG, path);
-        final Cursor cursor = activity.getDb().getEByPath(path);
-        String [] colums = new String[]{
-            DB.COLUMN_NAME
-        };
-        int[] to = new int[]{
-                R.id.text
-        };
-        cursorAdapter = new SimpleCursorAdapter(getActivity(),
-                R.layout.file_list_item,
-                cursor,
-                colums,
-                to,
-                0);
-        customCursorAdapter.swapCursor(cursor);
+        //final Cursor cursor = activity.getDb().getEByPath(path);
+        //cursor.moveToFirst();
+        //customCursorAdapter.swapCursor(cursor);
         final ListView filesTable = (ListView) view.findViewById(R.id.files_list);
         filesTable.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -126,7 +123,6 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
                 Cursor cursor1 = (Cursor)adapterView.getItemAtPosition(pos);//(Cursor) adapterView.getItemAtPosition(pos);
-                //Log.d(TAG, "!" + cursor1.getString(cursor1.getColumnIndexOrThrow(DB.COLUMN_PREVIEW)) + "!");
                 String path = cursor1.getString(cursor1.getColumnIndexOrThrow(DB.COLUMN_PATH));
                 String type = cursor1.getString(cursor1.getColumnIndexOrThrow(DB.COLUMN_TYPE));
                 String name = cursor1.getString(cursor1.getColumnIndexOrThrow(DB.COLUMN_NAME));
@@ -150,12 +146,15 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return null;
+        String path = bundle.getString(PATH);
+        MyActivity activity = (MyActivity) getActivity();
+        return new BestCursorLoader(activity, activity.getDb(),path);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-
+        cursor.moveToFirst();
+        customCursorAdapter.swapCursor(cursor);
     }
 
     @Override
@@ -193,6 +192,7 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
             String preview = u.getStringFromCursor(c, DB.COLUMN_PREVIEW);//c.getString(c.getColumnIndexOrThrow(DB.COLUMN_PREVIEW));
             String md5 = u.getStringFromCursor(c, DB.COLUMN_MD5);// c.getString(c.getColumnIndexOrThrow(DB.COLUMN_MD5));
             String path = u.getStringFromCursor(c, DB.COLUMN_PATH);
+            String cache_file = u.getStringFromCursor(c, DB.COLUMN_PATH_TO_FILE);
             String norm_path = path.split(":/")[1];
             if(is_dir) {
                 ((ImageView) convertView.findViewById(R.id.image)).setImageResource(R.drawable.folder);
@@ -201,13 +201,22 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
             }
             if(preview != null && !preview.equals("")) {
                 ImageCache cache = new ImageCache(getActivity());
+                if (cache_file != null && ! cache_file.equals("") && cache.isCached(norm_path)) {
+                    ((ImageView)convertView.findViewById(R.id.image)).setImageBitmap(cache.getPreview(norm_path));
+                    //Log.d("CACHE", "WAS CACHED!!!");
+                }
+                else {
+                    new PreviewDownloader().execute(convertView, cache, preview, md5, norm_path);
+                    //Log.d("CACHE", "DOWNLOAD!!!");
+                }
+                /*ImageCache cache = new ImageCache(getActivity());
                 if(cache.isCached(norm_path, md5)) {
                     ((ImageView) convertView.findViewById(R.id.image)).setImageBitmap(cache.getPreview(norm_path));
                     Log.d("CACHE", "WAS CACHED!!!");
                 } else {
                     new PreviewDownloader().execute(convertView, cache, preview, md5, norm_path);
                     Log.d("CACHE", "DOWNLOAD!!!");
-                }
+                }*/
             }
         }
     }
@@ -301,6 +310,7 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
     static class BestCursorLoader extends CursorLoader {
         DB db;
         String path;
+        HashMap<String, Cursor> map = new HashMap<String, Cursor>();
         public BestCursorLoader(Context context, DB db, String path) {
             super(context);
             this.path = path;
