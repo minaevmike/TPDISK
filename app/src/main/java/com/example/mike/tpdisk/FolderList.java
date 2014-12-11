@@ -66,6 +66,17 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
         }
     };
 
+    public void refresh(String path){
+        try {
+            path = URLEncoder.encode(path, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        ServiceHelper helper = new ServiceHelper();
+        helper.getFilesInFolder(getActivity(), path, handler);
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("FolderList", "On CreateView");

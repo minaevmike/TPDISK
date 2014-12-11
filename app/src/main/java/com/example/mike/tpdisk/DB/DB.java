@@ -13,6 +13,7 @@ import com.example.mike.tpdisk.FileInstance;
 import com.example.mike.tpdisk.cache.db.CachedFileEntryContract;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Mike on 30.11.2014.
@@ -22,7 +23,7 @@ public class DB {
     private static final int DB_VERSION = 1;
     private static final String DB_TABLE = "downloaded";
     private static final String DB_TABLE_FILE_URL = "file_url";
-    private static final String DB_TABLE_TIME_URL = "time_url";
+    private static final String DB_TABLE_TIME_PATH = "time_url";
 
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_PATH = "path";
@@ -70,11 +71,10 @@ public class DB {
                    COLUMN_PATH + " text UNIQUE" +
                    ");";
 
-    public static final String DB_CREATE_TIME_URL =
-            "create table " + DB_TABLE_TIME_URL + " (" +
+    public static final String DB_CREATE_TIME_PATH =
+            "create table " + DB_TABLE_TIME_PATH + " (" +
                     COLUMN_ID + " integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_FILE_TIME_TIME + " integer," +
-                    COLUMN_PATH_TO_FILE + " text," +
                     COLUMN_PATH + " text UNIQUE" +
                     ");";
 
@@ -213,7 +213,7 @@ public class DB {
         ArrayList<FileInstance> items = new ArrayList<FileInstance>();
         String[] path= new String[]{fileInstance.getPath()};
         cursor = database.query(DB_TABLE, null, COLUMN_PATH_TO_FILE + " = ?", path, null, null,null,null);
-        if(!cursor.moveToFirst()) {
+        /*if(!cursor.moveToFirst()) {
             return fileInstance;
         }else{
             FileInstance temp = new FileInstance();
@@ -232,7 +232,7 @@ public class DB {
             temp.setMime_type(cursor.getString(12));
             temp.setMd5(cursor.getString(13));
             items.add(temp);
-        }
+        }*/
         while (cursor.moveToNext())
         {
             FileInstance temp = new FileInstance();
@@ -267,21 +267,20 @@ public class DB {
 
     public long getMSecPath(String path){
         String[] names= new String[]{path};
-        Cursor cursor = database.query(DB_TABLE_TIME_URL, null, COLUMN_PATH + " = ?", names, null, null,null,null);
+        Cursor cursor = database.query(DB_TABLE_TIME_PATH, null, COLUMN_PATH + " = ?", names, null, null,null,null);
         if (cursor.moveToFirst())
             return cursor.getLong(1);
         else
             return -1;
     }
 
-    public void insertMSecPath(String path/*, String dir*/){
+    public void insertMSecPath(String path){
         long time = System.currentTimeMillis();
         ContentValues values = new ContentValues();
         values.put(COLUMN_FILE_TIME_TIME, time);
         values.put(COLUMN_PATH, path);
-        //values.put(COLUMN_PATH_TO_FILE, dir);
         try {
-            database.replaceOrThrow(DB_TABLE_TIME_URL, null, values);
+            database.replaceOrThrow(DB_TABLE_TIME_PATH, null, values);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -289,12 +288,22 @@ public class DB {
 
     public  void refreshDir(String dir){
         String[] names= new String[]{dir};
-        try {
-            database.delete(DB_TABLE_TIME_URL, COLUMN_PATH_TO_FILE + " = ?", names);
-            //database.update(DB_TABLE_TIME_URL, )
-        }
-        catch (SQLiteException e){
-            e.printStackTrace();
+        String[] columns= new String[]{COLUMN_PATH};
+       // List<String> paths = new ArrayList<String>();
+        Cursor cursor = database.query(DB_TABLE, columns, COLUMN_PATH_TO_FILE + " = ?", names, null, null,null,null);
+        while(cursor.moveToNext()) {
+            //paths.add(cursor.getString(0));
+            //}
+            try {
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_FILE_TIME_TIME, -1);
+                String[] paths = new String[]{cursor.getString(0)};
+                //database.delete(DB_TABLE_TIME_URL, COLUMN_PATH_TO_FILE + " = ?", names);
+                database.update(DB_TABLE_TIME_PATH, values, COLUMN_PATH + " = ?", paths);
+                //database.update(DB_TABLE_TIME_PATH, values, COLUMN_PATH + " = ?", paths.toArray(new String[paths.size()]));
+            } catch (SQLiteException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -303,7 +312,7 @@ public class DB {
         try {
             database.delete(DB_TABLE, null, null);
             database.delete(DB_TABLE_FILE_URL, null, null);
-            database.delete(DB_TABLE_TIME_URL, null, null);
+            database.delete(DB_TABLE_TIME_PATH, null, null);
         }
         catch (SQLiteException e){
             e.printStackTrace();
@@ -389,7 +398,7 @@ public class DB {
             Log.d("SQLiteDatabaseOnCreate", DB_CREATE);
             sqLiteDatabase.execSQL(DB_CREATE);
             sqLiteDatabase.execSQL(DB_CREATE_FILE_URL);
-            sqLiteDatabase.execSQL(DB_CREATE_TIME_URL);
+            sqLiteDatabase.execSQL(DB_CREATE_TIME_PATH);
 
         }
 

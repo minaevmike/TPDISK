@@ -52,13 +52,19 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
     public void onRefresh(){
         Toast.makeText(this, "I started", Toast.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(true);
-        //db.
+        /*FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.container, folderList, curPage);
+        transaction.addToBackStack(null);
+        transaction.commit();*/
         swipeRefreshLayout.postDelayed(new Runnable() {
             @Override
             public void run() {
+                db.refreshDir(curPage);
+                FolderList folderList = (FolderList) getSupportFragmentManager().findFragmentByTag(curPage);
+                folderList.refresh(curPage);
                 swipeRefreshLayout.setRefreshing(false);
             }
-        }, 3000);
+        }, 5);
     }
 
 

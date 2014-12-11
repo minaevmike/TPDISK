@@ -1,6 +1,7 @@
 package com.example.mike.tpdisk.Service;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 
 import com.example.mike.tpdisk.Connector;
@@ -52,6 +53,8 @@ public class Processor {
         else if((System.currentTimeMillis() - fileMSec > day)) {
             db.insertOrReplace(instance);
         }
+
+
         db.close();
         return instance.getPath();
     }
