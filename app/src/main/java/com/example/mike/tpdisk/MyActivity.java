@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
@@ -27,11 +29,15 @@ import android.widget.Toast;
 
 import com.example.mike.tpdisk.Service.UrlService;import com.example.mike.tpdisk.DB.DB;import com.example.mike.tpdisk.preferences.PreferencesActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.OnRefreshListener /*implements LoaderManager.LoaderCallbacks<String> */{
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
 
     private String TAG = "MainActivity";
-    public static final String CLIENT_ID = "f26cda49439e40c6bd49414779cadbce";
+    private static ArrayList<String> screens = new ArrayList<>();
+    public static final String  CLIENT_ID = "f26cda49439e40c6bd49414779cadbce";
     public static final String CLIENT_SECRET = "a559578417c34549a9a929c355e00e08";
     public static int counter = 0;
     public static final String ACCOUNT_TYPE = "com.yandex";
@@ -47,6 +53,15 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
     private SwipeRefreshLayout swipeRefreshLayout;
     private static String curPage;
     private DB db;
+
+    public Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            replaceFilesOnScreen(msg.obj.toString());
+            Log.d("FOLDER_LIST", msg.obj.toString());
+
+        }
+    };
     @Override
     public void onRefresh(){
         Toast.makeText(this, "I started", Toast.LENGTH_SHORT).show();
@@ -55,19 +70,33 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
         transaction.add(R.id.container, folderList, curPage);
         transaction.addToBackStack(null);
         transaction.commit();*/
+        final Context context = this;
         swipeRefreshLayout.postDelayed(new Runnable() {
             @Override
             public void run() {
                 db.refreshDir(curPage);
-                FolderList folderList = (FolderList) getSupportFragmentManager().findFragmentByTag(curPage);
+                ServiceHelper helper = new ServiceHelper();
+                helper.getFilesInFolder(context, screens.get(screens.size() - 1), handler);
                 Log.d("_______swipeRefreshLayout.postDelayed", curPage);
-                folderList.refresh(curPage);
+                //folderList.refresh(curPage);
                 swipeRefreshLayout.setRefreshing(false);
             }
         }, 5);
     }
 
-
+    public void replaceFilesOnScreen(String path){
+        FolderList folderList = new FolderList();
+        Bundle bundle = new Bundle();
+        bundle.putString(FolderList.PATH, path);
+        //bundle.putSerializable(FolderList.FILES, instance);
+        folderList.setArguments(bundle);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        //FolderList oldFolderList = (FolderList) getSupportFragmentManager().findFragmentByTag(curPage);
+        transaction.replace(R.id.container, folderList, path);
+        //transaction.add(R.id.container, folderList, path);
+        transaction.commit();
+        curPage = path;
+    }
     public void putFilesOnScreen(String path){
         //DB db = new DB(this);
         //db.open();
@@ -82,6 +111,7 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
         transaction.add(R.id.container, folderList, path);
         transaction.addToBackStack(null);
         transaction.commit();
+        screens.add(path);
         curPage = path;
     }
 
@@ -97,7 +127,17 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
         }
     }
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.d("PIZDA", screens.toString());
+        screens.remove(screens.size() - 1);
+        Log.d("PIZDA", screens.toString());
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        screens.add("disk:/");
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
@@ -151,15 +191,7 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
             Credentials.setToken(authToken);
         }
 
-        IntentFilter mStatusIntentFilter = new IntentFilter(UrlService.ACTION_SEND_RESULT);
 
-
-        if (urlLoader != null){
-            urlLoader.activity = this;
-            if (!urlLoader.getStatus().equals(AsyncTask.Status.FINISHED)){
-                urlLoader.showDialog();
-            }
-        }
 
         Log.d(TAG, Credentials.getToken() == null ? "NO TOKEN" : Credentials.getToken());
     }
