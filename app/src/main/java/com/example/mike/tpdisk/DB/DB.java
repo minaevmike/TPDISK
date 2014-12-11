@@ -74,6 +74,7 @@ public class DB {
             "create table " + DB_TABLE_TIME_URL + " (" +
                     COLUMN_ID + " integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_FILE_TIME_TIME + " integer," +
+                    COLUMN_PATH_TO_FILE + " text," +
                     COLUMN_PATH + " text UNIQUE" +
                     ");";
 
@@ -273,11 +274,12 @@ public class DB {
             return -1;
     }
 
-    public void insertMSecPath(String path){
+    public void insertMSecPath(String path/*, String dir*/){
         long time = System.currentTimeMillis();
         ContentValues values = new ContentValues();
         values.put(COLUMN_FILE_TIME_TIME, time);
         values.put(COLUMN_PATH, path);
+        //values.put(COLUMN_PATH_TO_FILE, dir);
         try {
             database.replaceOrThrow(DB_TABLE_TIME_URL, null, values);
         } catch (Exception e) {
@@ -285,10 +287,22 @@ public class DB {
         }
     }
 
+    public  void refreshDir(String dir){
+        String[] names= new String[]{dir};
+        try {
+            database.delete(DB_TABLE_TIME_URL, COLUMN_PATH_TO_FILE + " = ?", names);
+            //database.update(DB_TABLE_TIME_URL, )
+        }
+        catch (SQLiteException e){
+            e.printStackTrace();
+        }
+
+    }
+
     public void clearBase(){
         try {
             database.delete(DB_TABLE, null, null);
-            database.delete(DB_TABLE_TIME_URL, null, null);
+            database.delete(DB_TABLE_FILE_URL, null, null);
             database.delete(DB_TABLE_TIME_URL, null, null);
         }
         catch (SQLiteException e){

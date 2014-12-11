@@ -19,7 +19,8 @@ import java.util.HashMap;
  */
 public class Processor {
     private static final String TAG = "PROCESSOR";
-    private static final String URL = "https://cloud-api.yandex.net:443/v1/disk/resources?limit=10&path=";
+    private static final String URL = "https://cloud-api.yandex.net:443/v1/disk/resources?limit=1000&path=";
+    private static final long day = 86400000;
     public String getFileInstanceByPath(Context context, String path){
         /*try {
             path = URLEncoder.encode(path, "UTF-8");
@@ -43,7 +44,14 @@ public class Processor {
         FileInstance instance = parser.parse(answer);
         DB db = new DB(context);
         db.open();
-        db.insertOrReplace(instance);
+        long fileMSec = db.getMSecPath(instance.getPath());
+        if(fileMSec < 0){
+            db.insertMSecPath(instance.getPath());
+            db.insertOrReplace(instance);
+        }
+        else if((System.currentTimeMillis() - fileMSec > day)) {
+            db.insertOrReplace(instance);
+        }
         db.close();
         return instance.getPath();
     }
