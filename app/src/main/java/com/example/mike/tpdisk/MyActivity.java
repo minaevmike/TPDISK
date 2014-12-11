@@ -27,7 +27,7 @@ import android.widget.Toast;
 
 import com.example.mike.tpdisk.Service.UrlService;import com.example.mike.tpdisk.DB.DB;import com.example.mike.tpdisk.preferences.PreferencesActivity;
 
-public class MyActivity extends FragmentActivity implements DownloadStateReceiver.resultGetter, SwipeRefreshLayout.OnRefreshListener /*implements LoaderManager.LoaderCallbacks<String> */{
+public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.OnRefreshListener /*implements LoaderManager.LoaderCallbacks<String> */{
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
 
     private String TAG = "MainActivity";
@@ -44,7 +44,6 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
     public static String TOKEN = "example.token";
     public static UrlLoader urlLoader = null;
     private static int created = 0;
-    private DownloadStateReceiver mDownloadStateReceiver;
     private SwipeRefreshLayout swipeRefreshLayout;
     private static String curPage;
     private DB db;
@@ -148,10 +147,6 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         IntentFilter mStatusIntentFilter = new IntentFilter(UrlService.ACTION_SEND_RESULT);
 
 
-        mDownloadStateReceiver = new DownloadStateReceiver(this);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mDownloadStateReceiver, mStatusIntentFilter);
-
-
         if (urlLoader != null){
             urlLoader.activity = this;
             if (!urlLoader.getStatus().equals(AsyncTask.Status.FINISHED)){
@@ -167,7 +162,6 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
         Log.d(TAG, "onDestroy");
         //db.close();
         //urlLoader.hideDialog();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mDownloadStateReceiver);
         super.onDestroy();
     }
 
@@ -219,11 +213,6 @@ public class MyActivity extends FragmentActivity implements DownloadStateReceive
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void setResult(String result) {
-        Log.d(TAG, result);
     }
 
     public DB getDb() {
