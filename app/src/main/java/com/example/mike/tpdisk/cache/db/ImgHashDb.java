@@ -15,6 +15,7 @@ import java.util.jar.Attributes;
  * Created by Andrey
  * 02.12.2014.
  */
+@Deprecated
 public class ImgHashDb {
     private ImgHashDbHelper imgHashDbHelper= null;
 

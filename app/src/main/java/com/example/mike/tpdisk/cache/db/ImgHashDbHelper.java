@@ -9,6 +9,7 @@ import com.example.mike.tpdisk.cache.db.CachedFileEntryContract.CachedFileEntry;
  * Created by Andrey 
  * 26.11.2014.
  */
+@Deprecated
 public class ImgHashDbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "ImageCache.db";

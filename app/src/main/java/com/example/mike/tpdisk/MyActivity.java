@@ -60,6 +60,7 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
             public void run() {
                 db.refreshDir(curPage);
                 FolderList folderList = (FolderList) getSupportFragmentManager().findFragmentByTag(curPage);
+                Log.d("_______swipeRefreshLayout.postDelayed", curPage);
                 folderList.refresh(curPage);
                 swipeRefreshLayout.setRefreshing(false);
             }

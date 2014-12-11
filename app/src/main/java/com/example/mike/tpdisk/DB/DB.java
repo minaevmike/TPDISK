@@ -319,7 +319,7 @@ public class DB {
         }
 
     }
-
+    @Deprecated
     public FileInstance getElemByPath(String Path) {
         FileInstance fileInstance = new FileInstance();
         String[] names= new String[]{Path};

@@ -6,6 +6,7 @@ import android.provider.BaseColumns;
  * Created by Andrey
  * 26.11.2014.
  */
+@Deprecated
 public class CachedFileEntryContract {
     private CachedFileEntryContract() {}
 
