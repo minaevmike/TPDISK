@@ -32,7 +32,7 @@ import com.example.mike.tpdisk.Service.UrlService;import com.example.mike.tpdisk
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.OnRefreshListener /*implements LoaderManager.LoaderCallbacks<String> */{
+public class MyActivity extends FragmentActivity /*implements LoaderManager.LoaderCallbacks<String> */{
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
 
     private String TAG = "MainActivity";
@@ -50,7 +50,6 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
     public static String TOKEN = "example.token";
     public static UrlLoader urlLoader = null;
     private static int created = 0;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private static String curPage;
     private DB db;
 
@@ -62,27 +61,7 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
 
         }
     };
-    @Override
-    public void onRefresh(){
-        Toast.makeText(this, "I started", Toast.LENGTH_SHORT).show();
-        swipeRefreshLayout.setRefreshing(true);
-        /*FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.container, folderList, curPage);
-        transaction.addToBackStack(null);
-        transaction.commit();*/
-        final Context context = this;
-        swipeRefreshLayout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                db.refreshDir(curPage);
-                ServiceHelper helper = new ServiceHelper();
-                helper.getFilesInFolder(context, screens.get(screens.size() - 1), handler);
-                Log.d("_______swipeRefreshLayout.postDelayed", curPage);
-                //folderList.refresh(curPage);
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }, 5);
-    }
+
 
     public void replaceFilesOnScreen(String path){
         FolderList folderList = new FolderList();
@@ -108,14 +87,15 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
         //bundle.putSerializable(FolderList.FILES, instance);
         folderList.setArguments(bundle);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.container, folderList, path);
+        //transaction.add(R.id.container, folderList, path);
+        transaction.replace(R.id.container, folderList, path);
         transaction.addToBackStack(null);
         transaction.commit();
         screens.add(path);
         curPage = path;
     }
 
-    public void setEnablesSwipe(boolean flag){
+    /*public void setEnablesSwipe(boolean flag){
         if (swipeRefreshLayout != null){
             swipeRefreshLayout.setEnabled(flag);
         }
@@ -125,12 +105,12 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
         if(swipeRefreshLayout != null){
             swipeRefreshLayout.setRefreshing(flag);
         }
-    }
+    }*/
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         Log.d("PIZDA", screens.toString());
-        screens.remove(screens.size() - 1);
+        //screens.remove(screens.size() - 1);
         Log.d("PIZDA", screens.toString());
 
     }
@@ -145,9 +125,6 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
         db = new DB(this);
         db.open();
         String authToken = utils.getToken(this);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeResources(R.color.swipe_color_1, R.color.swipe_color_2, R.color.swipe_color_3, R.color.swipe_color_4);
         // TODO: Fix expires
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -185,6 +162,10 @@ public class MyActivity extends FragmentActivity implements SwipeRefreshLayout.O
                 utils.saveData(this, token, expires);
                 Credentials.setToken(token);
                 Log.d(TAG, data);
+                Intent i = new Intent(MyActivity.this, SplashScreenActivity.class);
+                i.putExtra(SplashScreenActivity.TOKEN, token);
+                startActivity(i);
+                finish();
             }
         }
         else {

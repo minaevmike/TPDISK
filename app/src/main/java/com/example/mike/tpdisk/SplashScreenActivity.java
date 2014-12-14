@@ -18,7 +18,8 @@ public class SplashScreenActivity extends Activity {
     public static final String FILES_FROM_BEGIN = "FILES_FROM_BEGIN";
     private static final int SPLASH_SHOW_TIME = 1000;
     private String TAG = "SplashAsync";
-    private String token;
+    public static final String TOKEN = "TOKEN";
+    private String token = null;
 
     public Handler handler = new Handler(){
         @Override
@@ -36,12 +37,18 @@ public class SplashScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            token = bundle.getString(TOKEN, null);
+        }
         Utils utils = new Utils();
-        token = utils.getToken(this);
+        if (token == null) {
+            token = utils.getToken(this);
+        }
         if(token != null) {
             Credentials.setToken(token);
             ServiceHelper helper = new ServiceHelper();
-            helper.getFilesInFolder(this, "disk%3A%2F", handler);
+            helper.getFilesInFolder(this, "disk:/", handler);
         }
         else {
             Intent i = new Intent(SplashScreenActivity.this,

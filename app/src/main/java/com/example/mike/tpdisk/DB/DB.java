@@ -133,31 +133,10 @@ public class DB {
                 values.clear();
             }
         }
-        /*values.put(COLUMN_PATH, fileInstance.getPath());
-        values.put(COLUMN_TYPE, fileInstance.getType());
-        values.put(COLUMN_NAME, fileInstance.getName());
-        values.put(COLUMN_MODIFIED, fileInstance.getModified());
-        values.put(COLUMN_CREATED, fileInstance.getCreated());
-        values.put(COLUMN_SIZE, fileInstance.getSize());
-        values.put(COLUMN_PUBLIC_KEY, fileInstance.getPublic_key());
-        values.put(COLUMN_ORIG_PATH, fileInstance.getOrigin_path());
-        values.put(COLUMN_PUBLIC_URL, fileInstance.getPublic_url());
-        values.put(COLUMN_MEDIA_TYPE, fileInstance.getMedia_type());
-        values.put(COLUMN_PREVIEW, fileInstance.getPreview());
-        values.put(COLUMN_MIME_TYPE, fileInstance.getMime_type());
-        values.put(COLUMN_MD5, fileInstance.getMd5());
-        Log.d("Inserting", fileInstance.getPath());
-        try {
-            database.replaceOrThrow(DB_TABLE, null, values);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+
 
     }
 
-    /*public Cursor getAll() {
-        return database.query(DB_TABLE, null,null, null, null, null, null);
-    }*/
 
     public int deleteByPath(String Path){
 

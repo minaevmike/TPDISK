@@ -12,6 +12,7 @@ import com.example.mike.tpdisk.JsonFileListParser;
 import com.example.mike.tpdisk.R;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
@@ -22,12 +23,29 @@ public class Processor {
     private static final String TAG = "PROCESSOR";
     private static final String URL = "https://cloud-api.yandex.net:443/v1/disk/resources?limit=1000&path=";
     private static final long day = 86400000;
-    public String getFileInstanceByPath(Context context, String path){
-        /*try {
-            path = URLEncoder.encode(path, "UTF-8");
+    public String getFileInstanceByPath(Context context, String path, boolean is_force){
+        String utf8Path = "";
+        try {
+            utf8Path = URLDecoder.decode(path, "UTF-8");//URLEncoder.encode(path, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        }*/
+        }
+        DB db = new DB(context);
+        db.open();
+        long fileMSec = db.getMSecPath(path);
+        long fileUtf8Msec = db.getMSecPath(utf8Path);
+        long curTime = System.currentTimeMillis();
+        Log.d(TAG, "PATH: " + path);
+        Log.d(TAG, "UTF-8 PATH: " + utf8Path);
+        Log.d(TAG, "fileMsec: " + Long.toString(fileMSec));
+        Log.d(TAG, "fileUTF-8Msec: " + Long.toString(fileUtf8Msec));
+        Log.d(TAG, "Timediff: " + Long.toString(System.currentTimeMillis() - fileMSec));
+        Log.d(TAG, "IS_FORCE: " + Boolean.toString(is_force));
+        if ((curTime - fileMSec < day || curTime - fileUtf8Msec < day) && !is_force){
+            Log.d(TAG, "NOT FORCE AND TOO LESS TIME PASS");
+            return utf8Path;
+        }
+        db.deleteByPath(path);
         JsonFileListParser parser = new JsonFileListParser();
         String url = URL + path;
         Log.d(TAG, url);
@@ -43,17 +61,11 @@ public class Processor {
             return null;
         }
         FileInstance instance = parser.parse(answer);
-        DB db = new DB(context);
-        db.open();
-        long fileMSec = db.getMSecPath(instance.getPath());
-        if(fileMSec < 0){
-            db.insertMSecPath(instance.getPath());
-            db.insertOrReplace(instance);
-        }
-        else if((System.currentTimeMillis() - fileMSec > day)) {
-            db.insertOrReplace(instance);
-        }
 
+        //long fileMSec = db.getMSecPath(instance.getPath());
+        db.insertMSecPath(instance.getPath());
+        db.insertOrReplace(instance);
+        Log.d(TAG, instance.getPath());
 
         db.close();
         return instance.getPath();

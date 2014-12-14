@@ -46,7 +46,7 @@ import java.util.HashMap;
 /**
  * Created by Mike on 26.10.2014.
  */
-public class FolderList extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FolderList extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
     Toast toast;
     public static final String FILES = "FILES_LIST";
     public static final String PATH = "PATH";
@@ -54,13 +54,33 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
     SimpleCursorAdapter cursorAdapter;
     private CustomCursorAdapter customCursorAdapter;
     private DB db;
+    private String CUR_PATH;
     private static int i = 0;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
 
     public Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             MyActivity activity = (MyActivity)getActivity();
             activity.putFilesOnScreen(msg.obj.toString());
+            Log.d("FOLDER_LIST", msg.obj.toString());
+
+        }
+    };
+
+    public Handler handler_to_init_loader = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            getClass().getSuperclass();
+            MyActivity activity = (MyActivity)getActivity();
+            String path = msg.obj.toString();
+            Bundle bundle = new Bundle();
+            bundle.putString(PATH, path);
+            getActivity().getSupportLoaderManager().initLoader(i, bundle, FolderList.this);
+            getActivity().getSupportLoaderManager().getLoader(i).forceLoad();
+            i++;
+            //activity.putFilesOnScreen(msg.obj.toString());
             Log.d("FOLDER_LIST", msg.obj.toString());
 
         }
@@ -85,12 +105,44 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
     }
 
     @Override
+    public void onRefresh(){
+        Toast.makeText(getActivity(), "I started", Toast.LENGTH_SHORT).show();
+        swipeRefreshLayout.setRefreshing(true);
+        /*FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.container, folderList, curPage);
+        transaction.addToBackStack(null);
+        transaction.commit();*/
+        final Context context = getActivity();
+        Log.d("onRefresh", CUR_PATH);
+        swipeRefreshLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MyActivity activity = (MyActivity)getActivity();
+                activity.getDb().refreshDir(CUR_PATH);
+                ServiceHelper helper = new ServiceHelper();
+                helper.getFilesInFolder(context, CUR_PATH, handler_to_init_loader, true);
+                //Log.d("_______swipeRefreshLayout.postDelayed", curPage);
+                //folderList.refresh(curPage);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 5);
+    }
+    public void setEnablesSwipe(boolean flag){
+        if (swipeRefreshLayout != null){
+            swipeRefreshLayout.setEnabled(flag);
+        }
+    }
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.swipe_color_1, R.color.swipe_color_2, R.color.swipe_color_3, R.color.swipe_color_4);
         customCursorAdapter = new CustomCursorAdapter(getActivity(), null);
         super.onViewCreated(view, savedInstanceState);
         setRetainInstance(true);
         Log.d("FolderList", "On View Created");
         String path = getArguments().getString(PATH);
+        CUR_PATH = path;
         Log.d(TAG, path);
         Bundle bundle = new Bundle();
         bundle.putString(PATH, path);
@@ -123,10 +175,10 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
             public void onScroll(AbsListView absListView, int i, int i2, int i3) {
                 MyActivity activity = (MyActivity)getActivity();
                 if (i == 0){
-                    activity.setEnablesSwipe(true);
+                    setEnablesSwipe(true);
                 }
                 else {
-                    activity.setEnablesSwipe(false);
+                   setEnablesSwipe(false);
                 }
             }
         });

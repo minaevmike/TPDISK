@@ -45,6 +45,7 @@ public class UrlService extends IntentService {
     public static final String PARAM_RESULT = "com.example.mike.tpdisk.extra.PARAM_RESULT";
     public static final String PARAM_FOLDER = "com.example.mike.tpdisk.extra.PARAM_FOLDER";
     public static final String PARAM_MESSENGER = "com.example.mike.tpdisk.extra.PARAM_MESSENGER";
+    public static final String IS_FORCE= "com.example.mike.tpdisk.extra.IS_FORCE";
 
     public static final String PROGRESS_RESULT = "com.example.mike.tpdisk.extra.PROGRESS_RESULT";
 
@@ -66,7 +67,8 @@ public class UrlService extends IntentService {
             final String action = intent.getAction();
             if (ACTION_GET_URI.equals(action)) {
                 final String url = intent.getStringExtra(PARAM_FOLDER);
-                String folder = handleGetFolder(this, url);
+                boolean is_force = intent.getBooleanExtra(IS_FORCE, false);
+                String folder = handleGetFolder(this, url, is_force);
                 Messenger messenger = (Messenger)intent.getExtras().get(PARAM_MESSENGER);
                 Message message = Message.obtain();
                 message.obj = folder;
@@ -94,9 +96,9 @@ public class UrlService extends IntentService {
         return map;
     }
 
-    private String handleGetFolder(Context context, String folder){
+    private String handleGetFolder(Context context, String folder, boolean is_force){
         Processor processor = new Processor();
-        return processor.getFileInstanceByPath(context, folder);
+        return processor.getFileInstanceByPath(context, folder, is_force);
     }
 
     private void handleActionGetUri(String url) {
