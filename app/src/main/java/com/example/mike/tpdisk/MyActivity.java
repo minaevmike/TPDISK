@@ -1,5 +1,6 @@
 package com.example.mike.tpdisk;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -123,6 +124,8 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
     protected void onCreate(Bundle savedInstanceState) {
         screens.add("disk:/");
         Log.d(TAG, "onCreate");
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         Utils utils = new Utils();
