@@ -34,11 +34,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mike.tpdisk.DB.DB;
+import com.example.mike.tpdisk.RoundImageView.MLRoundedImageView;
 import com.example.mike.tpdisk.Utils;
 import com.example.mike.tpdisk.Service.UrlService;
 import com.example.mike.tpdisk.cache.ImageCache;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
@@ -308,7 +311,7 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
         }
 
         protected void onPostExecute(Bitmap result) {
-            ((ImageView) view.findViewById(R.id.image)).setImageBitmap(result);
+            ((MLRoundedImageView) view.findViewById(R.id.image)).setImageBitmap(result);
             imageCache.cache(result, norm_path, md5);
         }
     }
