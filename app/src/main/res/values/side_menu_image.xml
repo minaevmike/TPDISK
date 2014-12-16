@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array
+        name="side_menu_image_array">
+        <item>@drawable/ic_side_menu_image_change_user</item>
+        <item>@drawable/ic_side_menu_image_info</item>
+        <item>@drawable/ic_side_menu_image_quit</item>
+    </array>
+</resources>
+

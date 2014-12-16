@@ -13,5 +13,8 @@
     <string name="pref_notify_download_key">pref_notify_download_start</string>
     <string name="get_files">https://cloud-api.yandex.net:443/v1/disk/resources?path=</string>
     <string name="search">Search</string>
+    <string name="banner">banner</string>
+    <string name="side_menu_item_descr">side_menu_item</string>
+    <string name="banner_dcr">banner</string>
 
 </resources>

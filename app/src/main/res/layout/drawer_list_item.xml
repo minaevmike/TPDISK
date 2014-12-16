@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="20sp"
+    android:paddingBottom="20sp">
+    <ImageView android:id ="@+id/drawer_item_image"
+        android:layout_width="@dimen/list_item_size_w"
+        android:layout_height="@dimen/list_item_size"
+        android:src="@drawable/ic_launcher"
+        android:layout_gravity="center" />
+    <TextView
+        android:id="@+id/drawer_item_text"
+        android:padding="6sp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:textColor="#333333"
+        android:textSize="20sp"
+        android:text="test_text" />
+</LinearLayout>

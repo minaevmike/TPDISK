@@ -6,31 +6,32 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
+import android.content.res.TypedArray;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
+import android.widget.SimpleAdapter;
 
-import com.example.mike.tpdisk.Service.UrlService;import com.example.mike.tpdisk.DB.DB;import com.example.mike.tpdisk.preferences.PreferencesActivity;
+import com.example.mike.tpdisk.DB.DB;import com.example.mike.tpdisk.preferences.PreferencesActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MyActivity extends FragmentActivity /*implements LoaderManager.LoaderCallbacks<String> */{
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
@@ -41,6 +42,9 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
     public static final String CLIENT_SECRET = "a559578417c34549a9a929c355e00e08";
     public static int counter = 0;
     public static final String ACCOUNT_TYPE = "com.yandex";
+
+    private String[] sideMenuStringItems;
+    private ListView drawerList;
 
     public static final String AUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id="+CLIENT_ID;
     private static final String ACTION_ADD_ACCOUNT = "com.yandex.intent.ADD_ACCOUNT";
@@ -172,7 +176,20 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
             Credentials.setToken(authToken);
         }
 
-
+        sideMenuStringItems = getResources().getStringArray(R.array.side_menu_text_array);
+        drawerList = (ListView) findViewById(R.id.side_menu);
+        TypedArray images = getResources().obtainTypedArray(R.array.side_menu_image_array);
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (int i = 0; i < sideMenuStringItems.length; i++) {
+            Map<String, Object> datum = new HashMap<String, Object>(2);
+            datum.put("text", sideMenuStringItems[i]);
+            datum.put("image", images.getResourceId(i, 0));
+            data.add(datum);
+        }
+        drawerList.setAdapter(new SimpleAdapter(this, data, R.layout.drawer_list_item,
+                new String[] {"text","image"},
+                new int[] {R.id.drawer_item_text, R.id.drawer_item_image}));
+        drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         Log.d(TAG, Credentials.getToken() == null ? "NO TOKEN" : Credentials.getToken());
     }
@@ -289,6 +306,34 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                     .create();
         }
     };
+
+    private class DrawerItemClickListener implements android.widget.AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            switch(position) {
+                case 0:
+                    break;
+                case 1:
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
+                    builder.setTitle("Информация")
+                            .setMessage("Создано TP-GABEN-TEAM!")
+                            .setIcon(R.drawable.ic_info_gaben)
+                            .setCancelable(false)
+                            .setNegativeButton("ОК...",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                    break;
+                case 2:
+                    finish();
+                    break;
+            }
+        }
+    }
 
 
 }

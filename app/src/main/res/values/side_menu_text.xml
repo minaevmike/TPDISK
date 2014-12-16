@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array
+        name="side_menu_text_array">
+        <item>Сменить пользователя</item>
+        <item>Информация</item>
+        <item>Выход</item>
+    </array>
+</resources>
+
