@@ -228,15 +228,10 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
 
                 @Override
                 public boolean onQueryTextSubmit(String s) {
-                    Log.d(TAG + " SEARCH", s);
-
-                    //FolderList folderList = new FolderList();
-                    //Bundle bundle = new Bundle();
-                    //bundle.putString(FolderList.PATH, curPage);
-                    //bundle.putSerializable(FolderList.FILES, instance);
-                    //folderList.setArguments(bundle);
+                    //Log.d(TAG + " SEARCH", s);
                     FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
                     FolderList.search(s);
+
 
                     return false;
                 }
@@ -244,6 +239,8 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 public boolean onQueryTextChange(String query) {
 
                     //Log.d(TAG + " SEARCH", query);
+                    FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
+                    FolderList.search(query);
 
                     return true;
 
@@ -254,6 +251,8 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 @Override
                 public boolean onClose() {
                     Log.d("CLOSE", "CLOSE");
+                    FolderList folderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
+                    putFilesOnScreen( folderList.getCUR_PATH(), false);
                     return false;
                 }
             });

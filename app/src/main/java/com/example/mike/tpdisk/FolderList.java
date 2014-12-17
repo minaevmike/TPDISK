@@ -60,6 +60,11 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
     SimpleCursorAdapter cursorAdapter;
     private CustomCursorAdapter customCursorAdapter;
     private DB db;
+
+    public String getCUR_PATH() {
+        return CUR_PATH;
+    }
+
     private String CUR_PATH;
     private static int i = 0;
     private SwipeRefreshLayout swipeRefreshLayout;
