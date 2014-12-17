@@ -86,7 +86,7 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
     public Handler handler_to_init_loader = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            getClass().getSuperclass();
+            swipeRefreshLayout.setRefreshing(false);
             String path = msg.obj.toString();
             Bundle bundle = new Bundle();
             bundle.putString(PATH, path);
@@ -123,24 +123,15 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
     public void onRefresh(){
         Toast.makeText(getActivity(), "I started", Toast.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(true);
-        /*FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.container, folderList, curPage);
-        transaction.addToBackStack(null);
-        transaction.commit();*/
         final Context context = getActivity();
         Log.d("onRefresh", CUR_PATH);
-        swipeRefreshLayout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                MyActivity activity = (MyActivity)getActivity();
-                activity.getDb().refreshDir(CUR_PATH);
-                ServiceHelper helper = new ServiceHelper();
-                helper.getFilesInFolder(context, CUR_PATH, handler_to_init_loader, true);
-                //Log.d("_______swipeRefreshLayout.postDelayed", curPage);
-                //folderList.refresh(curPage);
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }, 0);
+        MyActivity activity = (MyActivity)getActivity();
+        activity.getDb().refreshDir(CUR_PATH);
+        ServiceHelper helper = new ServiceHelper();
+        helper.getFilesInFolder(context, CUR_PATH, handler_to_init_loader, true);
+        //Log.d("_______swipeRefreshLayout.postDelayed", curPage);
+        //folderList.refresh(curPage);
+
     }
     public void setEnablesSwipe(boolean flag){
         if (swipeRefreshLayout != null){
