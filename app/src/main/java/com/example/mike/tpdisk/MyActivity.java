@@ -241,7 +241,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 @Override
                 public boolean onQueryTextSubmit(String s) {
                     //Log.d(TAG + " SEARCH", s);
-                    FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
+                    FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(getSupportFragmentManager().getFragments().size() - 1);
                     FolderList.search(s);
                     in_search = true;
 
@@ -251,8 +251,8 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 @Override
                 public boolean onQueryTextChange(String query) {
 
-                    //Log.d(TAG + " SEARCH", query);
-                    FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
+                    Log.d(TAG + " SEARCH", String.valueOf(getSupportFragmentManager().getFragments().size()));
+                    FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(getSupportFragmentManager().getFragments().size() - 1);
                     FolderList.search(query);
                     in_search = true;
 
