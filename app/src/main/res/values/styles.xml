@@ -22,7 +22,6 @@
         <item name="android:textSize">20sp</item>
     </style>
     <style name="AppTheme" parent="android:Theme.Material.Light">
-        <item name="android:searchIcon">@drawable/folder</item>
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
         <item name="android:colorPrimary">@color/action_bar</item>
@@ -31,4 +30,5 @@
         <!--   theme UI controls like checkboxes and text fields -->
         <item name="android:colorAccent">#ff3d00</item>
     </style>
+
 </resources>
