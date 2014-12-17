@@ -60,6 +60,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
     public static UrlLoader urlLoader = null;
     private static int created = 0;
     private static String curPage;
+    private static boolean in_search = false;
     private DB db;
 
     public void putFilesOnScreen(String path, boolean put_to_back_stack){
@@ -181,6 +182,17 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
     }
 
     @Override
+    public void onBackPressed() {
+        if(in_search){
+            FolderList folderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
+            putFilesOnScreen( folderList.getCUR_PATH(), false);
+            in_search = false;
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = ((DrawerLayout) findViewById(R.id.drawer_layout)).isDrawerOpen(drawerList);
@@ -231,6 +243,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                     //Log.d(TAG + " SEARCH", s);
                     FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
                     FolderList.search(s);
+                    in_search = true;
 
 
                     return false;
@@ -241,6 +254,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                     //Log.d(TAG + " SEARCH", query);
                     FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
                     FolderList.search(query);
+                    in_search = true;
 
                     return true;
 
@@ -253,6 +267,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                     Log.d("CLOSE", "CLOSE");
                     FolderList folderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
                     putFilesOnScreen( folderList.getCUR_PATH(), false);
+                    in_search = false;
                     return false;
                 }
             });
