@@ -16,5 +16,7 @@
     <string name="banner">banner</string>
     <string name="side_menu_item_descr">side_menu_item</string>
     <string name="banner_dcr">banner</string>
+    <string name="close_desc">naw drawer close</string>
+    <string name="open_desc">nav drawer  open</string>
 
 </resources>

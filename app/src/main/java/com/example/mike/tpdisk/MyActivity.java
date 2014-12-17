@@ -1,33 +1,35 @@
 package com.example.mike.tpdisk;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 
-import com.example.mike.tpdisk.DB.DB;import com.example.mike.tpdisk.preferences.PreferencesActivity;
+import com.example.mike.tpdisk.DB.DB;
+import com.example.mike.tpdisk.preferences.PreferencesActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +48,9 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
 
     private String[] sideMenuStringItems;
     private ListView drawerList;
+    private ActionBarDrawerToggle drawerToggle;
+    private CharSequence barTitle;
+
 
     public static final String AUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id="+CLIENT_ID;
     private static final String ACTION_ADD_ACCOUNT = "com.yandex.intent.ADD_ACCOUNT";
@@ -124,8 +129,10 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
     protected void onCreate(Bundle savedInstanceState) {
         screens.add("disk:/");
         Log.d(TAG, "onCreate");
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        //ActionBar actionBar = getActionBar();
+        //actionBar.setDisplayHomeAsUpEnabled(true);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         Utils utils = new Utils();
@@ -194,8 +201,55 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 new int[] {R.id.drawer_item_text, R.id.drawer_item_image}));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        barTitle = getTitle();
+
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.drawable.ic_drawer1,
+                R.string.open_desc,
+                R.string.close_desc
+        ){
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getActionBar().setTitle(barTitle);
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                getActionBar().setTitle("Menu");
+                invalidateOptionsMenu();
+            }
+        };
+        drawerLayout.setDrawerListener(drawerToggle);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+
         Log.d(TAG, Credentials.getToken() == null ? "NO TOKEN" : Credentials.getToken());
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        boolean drawerOpen = ((DrawerLayout) findViewById(R.id.drawer_layout)).isDrawerOpen(drawerList);
+        menu.findItem(R.id.search).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
 
     @Override
     protected void onDestroy(){
@@ -252,6 +306,10 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
             startActivity(intent);
             return true;
         }
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
         return super.onOptionsItemSelected(item);
     }
 
