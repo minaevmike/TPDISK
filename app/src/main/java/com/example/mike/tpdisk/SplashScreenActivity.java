@@ -28,20 +28,7 @@ public class SplashScreenActivity extends Activity {
     public static final String TOKEN = "TOKEN";
     private String token = null;
     ImageView logo;
-    private Thread thread = new Thread(){
-        @Override
-    public void run(){
-            try {
-                while (true){
-                    sleep(50);
-                    logo.setScaleX((float)1.1);
-                }
-            }
-            catch (InterruptedException e){
-
-            }
-        }
-    };
+    boolean is_run = true;
     public Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -49,12 +36,36 @@ public class SplashScreenActivity extends Activity {
                     MyActivity.class);
             i.putExtra(FILES_FROM_BEGIN, (String)msg.obj);
             startActivity(i);
+            is_run = false;
             finish();
 
         }
     };
-    private void scaleImage(ImageView view, double factor)
+    Thread thread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            int i = 0;
+            try {
+                while (true){
+                    Thread.sleep(50);
+                    if (i % 10 < 5) {
+                        scaleImage(logo, 1);
+                    }
+                    else {
+                        scaleImage(logo, -1);
+                    }
+                }
+            } catch (Exception e){
+
+            }
+
+        }
+    });
+    private void scaleImage(ImageView view, int factor)
     {
+        Bitmap bitmap = ((BitmapDrawable)view.getDrawable()).getBitmap();
+        Bitmap resultBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() + (int)(factor * 20), bitmap.getHeight() +(int)(factor* 20), true);
+        view.setImageBitmap(resultBitmap);
     }
 
     private int dpToPx(int dp)
@@ -68,14 +79,11 @@ public class SplashScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         Bundle bundle = getIntent().getExtras();
-        //logo = (ImageView)findViewById(R.id.imgLogo);
+        logo = (ImageView)findViewById(R.id.imgLogo);
         //thread.start();
         //scaleImage();
-        try {
-            Thread.sleep(2000);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
+        //scaleImage(logo, 0);
+        //thread.start();
         if (bundle != null) {
             token = bundle.getString(TOKEN, null);
         }

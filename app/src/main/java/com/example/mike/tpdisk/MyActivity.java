@@ -252,7 +252,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 public boolean onQueryTextChange(String query) {
 
                     //Log.d(TAG + " SEARCH", query);
-                    FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
+                    FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(getSupportFragmentManager().getFragments().size() - 1);
                     FolderList.search(query);
                     in_search = true;
 
