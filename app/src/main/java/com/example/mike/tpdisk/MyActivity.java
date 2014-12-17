@@ -317,24 +317,28 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 case 0:
                     break;
                 case 1:
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
-                    builder.setTitle("Информация")
-                            .setMessage("Создано TP-GABEN-TEAM!")
-                            .setIcon(R.drawable.ic_info_gaben)
-                            .setCancelable(false)
-                            .setNegativeButton("ОК...",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    });
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                    onInfoButtonClick();
                     break;
                 case 2:
                     finish();
                     break;
             }
+        }
+
+        private void onInfoButtonClick() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
+            builder.setTitle("Информация")
+                    .setMessage("Создано TP-GABEN-TEAM!")
+                    .setIcon(R.drawable.ic_info_gaben)
+                    .setCancelable(false)
+                    .setNegativeButton("ОК...",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 
