@@ -217,7 +217,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
     @Override
     protected void onDestroy(){
         Log.d(TAG, "onDestroy");
-        //db.close();
+        db.close();
         //urlLoader.hideDialog();
         super.onDestroy();
     }
