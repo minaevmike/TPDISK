@@ -68,9 +68,12 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
     public Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
+            swipeRefreshLayout.setRefreshing(false);
             MyActivity activity = (MyActivity)getActivity();
-            activity.putFilesOnScreen(msg.obj.toString());
-            Log.d("FOLDER_LIST", msg.obj.toString());
+            activity.putFilesOnScreen(msg.obj.toString(), true);
+            Log.d("FOLDER_LIST_HANDELR", msg.obj.toString());
+            CharSequence folder = msg.obj.toString().split(":/")[1];
+            getActivity().getActionBar().setTitle(folder);
 
         }
     };
@@ -79,28 +82,21 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
         @Override
         public void handleMessage(Message msg) {
             getClass().getSuperclass();
-            MyActivity activity = (MyActivity)getActivity();
             String path = msg.obj.toString();
             Bundle bundle = new Bundle();
             bundle.putString(PATH, path);
-            getActivity().getSupportLoaderManager().initLoader(i, bundle, FolderList.this);
-            getActivity().getSupportLoaderManager().getLoader(i).forceLoad();
-            i++;
+            MyActivity activity = (MyActivity)getActivity();
+            if (activity != null) {
+                activity.getSupportLoaderManager().initLoader(i, bundle, FolderList.this);
+                activity.getSupportLoaderManager().getLoader(i).forceLoad();
+                i++;
+            }
             //activity.putFilesOnScreen(msg.obj.toString());
-            Log.d("FOLDER_LIST", msg.obj.toString());
+            Log.d("FOLDER_LIST_TO_INIT", msg.obj.toString());
 
         }
     };
 
-    public void refresh(String path){
-        try {
-            path = URLEncoder.encode(path, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        ServiceHelper helper = new ServiceHelper();
-        helper.getFilesInFolder(getActivity(), path, handler);
-    }
 
     public void search(String name){
         Bundle bundle = new Bundle();
@@ -172,6 +168,13 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
         //Embedded embedded = instance.getEmbedded();
         //FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
         //MyActivity activity = (MyActivity) getActivity();
+        Log.d(TAG + "ON_CREATE", path);
+        String [] folders = path.split("/");
+        CharSequence folder = folders[folders.length - 1];
+        if (folders.length == 0 || folders.length == 1){
+            folder = "TPDISK";
+        }
+        getActivity().getActionBar().setTitle(folder);
         //final Cursor cursor = activity.getDb().getEByPath(path);
         //cursor.moveToFirst();
         //customCursorAdapter.swapCursor(cursor);
@@ -191,7 +194,6 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
 
             @Override
             public void onScroll(AbsListView absListView, int i, int i2, int i3) {
-                MyActivity activity = (MyActivity)getActivity();
                 if (i == 0){
                     setEnablesSwipe(true);
                 }
@@ -213,6 +215,7 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
                     e.printStackTrace();
                 }
                 if (type.equals(FileInstance.DIR)){
+                    swipeRefreshLayout.setRefreshing(true);
                     ServiceHelper helper = new ServiceHelper();
                     helper.getFilesInFolder(getActivity(), path, handler);
                 }

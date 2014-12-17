@@ -40,7 +40,6 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
     private static final int GET_ACCOUNT_CREDS_INTENT = 100;
 
     private String TAG = "MainActivity";
-    private static ArrayList<String> screens = new ArrayList<>();
     public static final String  CLIENT_ID = "f26cda49439e40c6bd49414779cadbce";
     public static final String CLIENT_SECRET = "a559578417c34549a9a929c355e00e08";
     public static int counter = 0;
@@ -63,71 +62,23 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
     private static String curPage;
     private DB db;
 
-    public Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            replaceFilesOnScreen(msg.obj.toString());
-            Log.d("FOLDER_LIST", msg.obj.toString());
+    public void putFilesOnScreen(String path, boolean put_to_back_stack){
 
-        }
-    };
-
-
-    public void replaceFilesOnScreen(String path){
         FolderList folderList = new FolderList();
         Bundle bundle = new Bundle();
         bundle.putString(FolderList.PATH, path);
-        //bundle.putSerializable(FolderList.FILES, instance);
         folderList.setArguments(bundle);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        //FolderList oldFolderList = (FolderList) getSupportFragmentManager().findFragmentByTag(curPage);
         transaction.replace(R.id.container, folderList, path);
-        //transaction.add(R.id.container, folderList, path);
+        if (put_to_back_stack) {
+            transaction.addToBackStack(null);
+        }
         transaction.commit();
         curPage = path;
-    }
-    public void putFilesOnScreen(String path){
-        //DB db = new DB(this);
-        //db.open();
-        //FileInstance instance = db.getElemByPath(path);
-        //db.close();
-        FolderList folderList = new FolderList();
-        Bundle bundle = new Bundle();
-        bundle.putString(FolderList.PATH, path);
-        //bundle.putSerializable(FolderList.FILES, instance);
-        folderList.setArguments(bundle);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        //transaction.add(R.id.container, folderList, path);
-        transaction.replace(R.id.container, folderList, path);
-        transaction.addToBackStack(null);
-        transaction.commit();
-        screens.add(path);
-        curPage = path;
-    }
-
-    /*public void setEnablesSwipe(boolean flag){
-        if (swipeRefreshLayout != null){
-            swipeRefreshLayout.setEnabled(flag);
-        }
-    }
-
-    public void setRefreshing(boolean flag){
-        if(swipeRefreshLayout != null){
-            swipeRefreshLayout.setRefreshing(flag);
-        }
-    }*/
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Log.d("PIZDA", screens.toString());
-        //screens.remove(screens.size() - 1);
-        Log.d("PIZDA", screens.toString());
-
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        screens.add("disk:/");
         Log.d(TAG, "onCreate");
 
         //ActionBar actionBar = getActionBar();
@@ -153,7 +104,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
             //created ++;
             Log.d(TAG, "NOT NULL");
             String path = bundle.getString(SplashScreenActivity.FILES_FROM_BEGIN);
-            putFilesOnScreen(path);
+            putFilesOnScreen(path, false);
             bundle.remove(SplashScreenActivity.FILES_FROM_BEGIN);
         }
         Log.d(TAG, authToken + " " + Integer.toString(utils.getExpires(this)));
@@ -205,19 +156,19 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
         barTitle = getTitle();
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-                R.drawable.ic_drawer1,
+                R.drawable.ic_menu,
                 R.string.open_desc,
                 R.string.close_desc
         ){
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getActionBar().setTitle(barTitle);
+                //getActionBar().setTitle(barTitle);
                 invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                getActionBar().setTitle("Menu");
+                //getActionBar().setTitle("Menu");
                 invalidateOptionsMenu();
             }
         };
@@ -299,7 +250,13 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 }
 
             });
-
+            search.setOnCloseListener(new SearchView.OnCloseListener() {
+                @Override
+                public boolean onClose() {
+                    Log.d("CLOSE", "CLOSE");
+                    return false;
+                }
+            });
         }
         return true;
     }
