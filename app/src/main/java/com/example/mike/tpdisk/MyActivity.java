@@ -241,7 +241,13 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 }
 
             });
-
+            search.setOnCloseListener(new SearchView.OnCloseListener() {
+                @Override
+                public boolean onClose() {
+                    Log.d("CLOSE", "CLOSE");
+                    return false;
+                }
+            });
         }
         return true;
     }
