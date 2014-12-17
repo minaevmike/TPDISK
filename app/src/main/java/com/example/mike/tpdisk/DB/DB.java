@@ -265,6 +265,19 @@ public class DB {
         }
     }
 
+    public Cursor search_in_dir(String dir, String name){
+        name = "%" + name + "%";
+        String[] search = new String[]{dir, name};
+        Log.d("search_in_dir dir name", dir + " " + name);
+        Cursor cursor = database.query(DB_TABLE, null, COLUMN_PATH_TO_FILE + " = ? and " + COLUMN_NAME + " LIKE ?", search, null,null,null,null);
+        if(cursor.moveToFirst())
+        {
+            return cursor;
+        }
+        else
+            return null;
+    }
+
     public  void refreshDir(String dir){
         String[] names= new String[]{dir};
         String[] columns= new String[]{COLUMN_PATH};

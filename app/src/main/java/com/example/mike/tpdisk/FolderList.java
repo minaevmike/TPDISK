@@ -49,10 +49,13 @@ import java.util.HashMap;
 /**
  * Created by Mike on 26.10.2014.
  */
+enum ECursors { GETBYPATH, GETBYNAMEINDIR }
+
 public class FolderList extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
     Toast toast;
     public static final String FILES = "FILES_LIST";
     public static final String PATH = "PATH";
+    public static final String NAME = "NAME";
     private static final String TAG = "FOLDER_LIST";
     SimpleCursorAdapter cursorAdapter;
     private CustomCursorAdapter customCursorAdapter;
@@ -99,6 +102,14 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
         helper.getFilesInFolder(getActivity(), path, handler);
     }
 
+    public void search(String name){
+        Bundle bundle = new Bundle();
+        bundle.putString(NAME, name);
+        getActivity().getSupportLoaderManager().initLoader(i, bundle, this);
+        getActivity().getSupportLoaderManager().getLoader(i).forceLoad();
+        i++;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -128,7 +139,7 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
                 //folderList.refresh(curPage);
                 swipeRefreshLayout.setRefreshing(false);
             }
-        }, 5);
+        }, 0);
     }
     public void setEnablesSwipe(boolean flag){
         if (swipeRefreshLayout != null){
@@ -145,10 +156,15 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
         setRetainInstance(true);
         Log.d("FolderList", "On View Created");
         String path = getArguments().getString(PATH);
-        CUR_PATH = path;
-        Log.d(TAG, path);
+        String name = getArguments().getString(NAME);
         Bundle bundle = new Bundle();
-        bundle.putString(PATH, path);
+        //if(path != null) {
+            CUR_PATH = path;
+            //Log.d(TAG, path);
+            bundle.putString(PATH, path);
+        //}else{
+        //    bundle.putString(NAME, name);
+        //}
         getActivity().getSupportLoaderManager().initLoader(i, bundle, this);
         getActivity().getSupportLoaderManager().getLoader(i).forceLoad();
         i++;
@@ -156,7 +172,6 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
         //Embedded embedded = instance.getEmbedded();
         //FileAdapter adapter = new FileAdapter(embedded.getItems().toArray(new FileInstance[embedded.getItems().size()]));
         //MyActivity activity = (MyActivity) getActivity();
-        Log.d(TAG, path);
         //final Cursor cursor = activity.getDb().getEByPath(path);
         //cursor.moveToFirst();
         //customCursorAdapter.swapCursor(cursor);
@@ -213,8 +228,16 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String path = bundle.getString(PATH);
+        String name = bundle.getString(NAME);
+        String cur_path = CUR_PATH;//new String(CUR_PATH);
+        //cur_path += CUR_PATH;
         MyActivity activity = (MyActivity) getActivity();
-        return new BestCursorLoader(activity, activity.getDb(),path);
+        if(path != null) {
+            return new BestCursorLoader(activity, activity.getDb(), path, cur_path, ECursors.GETBYPATH);
+        }else{
+            return new BestCursorLoader(activity, activity.getDb(), name, cur_path, ECursors.GETBYNAMEINDIR);
+        }
+
     }
 
     @Override
@@ -374,17 +397,27 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
 
     static class BestCursorLoader extends CursorLoader {
         DB db;
-        String path;
+        String path_or_name;
+        String cur_path;
+        ECursors ecursors;
         HashMap<String, Cursor> map = new HashMap<String, Cursor>();
-        public BestCursorLoader(Context context, DB db, String path) {
+        public BestCursorLoader(Context context, DB db, String path_or_name, String cur_path, ECursors ecursors) {
             super(context);
-            this.path = path;
+            this.path_or_name = path_or_name;
+            this.cur_path = cur_path;
             this.db = db;
+            this.ecursors = ecursors;
         }
 
         @Override
         public Cursor loadInBackground() {
-            Cursor cursor = this.db.getEByPath(this.path);
+            Cursor cursor;
+            if(this.ecursors == ECursors.GETBYNAMEINDIR) {
+                cursor = this.db.search_in_dir(this.cur_path, this.path_or_name);
+            }
+            else{
+                cursor = this.db.getEByPath(this.path_or_name);
+            }
             return cursor;
         }
     }

@@ -278,12 +278,21 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 @Override
                 public boolean onQueryTextSubmit(String s) {
                     Log.d(TAG + " SEARCH", s);
+
+                    //FolderList folderList = new FolderList();
+                    //Bundle bundle = new Bundle();
+                    //bundle.putString(FolderList.PATH, curPage);
+                    //bundle.putSerializable(FolderList.FILES, instance);
+                    //folderList.setArguments(bundle);
+                    FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
+                    FolderList.search(s);
+
                     return false;
                 }
                 @Override
                 public boolean onQueryTextChange(String query) {
 
-                    Log.d(TAG + " SEARCH", query);
+                    //Log.d(TAG + " SEARCH", query);
 
                     return true;
 
