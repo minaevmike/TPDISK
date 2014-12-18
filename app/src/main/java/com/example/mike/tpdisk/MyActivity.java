@@ -269,7 +269,8 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
                 public boolean onClose() {
                     Log.d("CLOSE", "CLOSE");
                     FolderList folderList = (FolderList)getSupportFragmentManager().getFragments().get(0);
-                    putFilesOnScreen( folderList.getCUR_PATH(), false);
+                    //putFilesOnScreen( folderList.getCUR_PATH(), false);
+                    folderList.showPath();
                     in_search = false;
                     return false;
                 }

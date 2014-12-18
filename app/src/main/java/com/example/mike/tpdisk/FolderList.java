@@ -82,7 +82,17 @@ public class FolderList extends Fragment implements LoaderManager.LoaderCallback
 
         }
     };
-
+    public void showPath(){
+        Bundle bundle = new Bundle();
+        bundle.putString(PATH, CUR_PATH);
+        MyActivity activity = (MyActivity)getActivity();
+        Log.d("SHOWING PATH", CUR_PATH);
+        if (activity != null) {
+            activity.getSupportLoaderManager().initLoader(i, bundle, FolderList.this);
+            activity.getSupportLoaderManager().getLoader(i).forceLoad();
+            i++;
+        }
+    }
     public Handler handler_to_init_loader = new Handler(){
         @Override
         public void handleMessage(Message msg) {
