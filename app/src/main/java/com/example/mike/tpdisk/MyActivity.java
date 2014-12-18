@@ -197,6 +197,7 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = ((DrawerLayout) findViewById(R.id.drawer_layout)).isDrawerOpen(drawerList);
         menu.findItem(R.id.search).setVisible(!drawerOpen);
+        menu.findItem(R.id.search).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -253,7 +254,9 @@ public class MyActivity extends FragmentActivity /*implements LoaderManager.Load
 
                     Log.d(TAG + " SEARCH", String.valueOf(getSupportFragmentManager().getFragments().size()));
                     FolderList FolderList = (FolderList)getSupportFragmentManager().getFragments().get(getSupportFragmentManager().getFragments().size() - 1);
-                    FolderList.search(query);
+                    if(query != null && !query.isEmpty()) {
+                        FolderList.search(query);
+                    }
                     in_search = true;
 
                     return true;
